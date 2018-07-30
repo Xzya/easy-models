@@ -6,6 +6,8 @@ type AnyMap = {
 
 /**
  * A function that represents a transformation.
+ * 
+ * Returns the result of the transformation, which may be null or undefined.
  */
 export type ValueTransformerFunction = (value: any) => any;
 
