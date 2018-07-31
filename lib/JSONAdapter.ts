@@ -3,6 +3,21 @@ import set = require("lodash.set");
 import { JSONSerializable, ModelClass } from "./JSONSerializable";
 import { ValueTransformer } from "./ValueTransformer";
 
+export enum MantleErrorTypes {
+    JSONAdapterNoClassFound = "JSONAdapterNoClassFoundError",
+}
+
+export class MantleError extends Error {
+
+}
+
+function CreateError(msg: string, name: MantleErrorTypes) {
+    const error = new MantleError(msg);
+    error.name = name;
+
+    return error;
+}
+
 type ValueTransformerMap = {
     [key: string]: ValueTransformer;
 };
@@ -82,7 +97,7 @@ export class JSONAdapter {
 
             // if the implementation didn't return any class
             if (!classToUse) {
-                return undefined;
+                throw CreateError("No model class could be found to parse the JSON", MantleErrorTypes.JSONAdapterNoClassFound);
             }
 
             // if the class is different than the one given as a parameter
@@ -113,12 +128,17 @@ export class JSONAdapter {
                 }
             }
 
+            // attempt to transform the value
             const transformer = transformers[key];
-
             if (transformer) {
                 set(model, key, transformer.transformedValue(value));
 
                 continue;
+            }
+
+            // change undefined to null
+            if (value === undefined) {
+                value = null;
             }
 
             set(model, key, value);
