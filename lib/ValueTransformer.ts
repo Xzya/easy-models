@@ -28,7 +28,7 @@ export class ValueTransformer {
      * 
      * @param value The value to be transformed.
      */
-    transformedValue(value: Readonly<any>) {
+    transformedValue(value: any) {
         if (this.forward) {
             return this.forward(value);
         }
@@ -40,11 +40,18 @@ export class ValueTransformer {
      * 
      * @param value The value to be reversed.
      */
-    reverseTransformedValue(value: Readonly<any>) {
+    reverseTransformedValue(value: any) {
         if (this.reverse) {
             return this.reverse(value);
         }
         return undefined;
+    }
+
+    /**
+     * Returns true if the transformer supports reverse transformations.
+     */
+    allowsReverseTransformation(): boolean {
+        return this.reverse != null;
     }
 
     /**

@@ -204,7 +204,7 @@ export class JSONAdapter {
 
             // if the key path is a string
             if (typeof keyPath === "string") {
-                if (transformer) {
+                if (transformer && transformer.allowsReverseTransformation()) {
                     set(result, keyPath, transformer.reverseTransformedValue(value));
                 }
                 else {
@@ -214,7 +214,7 @@ export class JSONAdapter {
             // else it must be an array of strings
             else {
                 for (let path of keyPath) {
-                    if (transformer) {
+                    if (transformer && transformer.allowsReverseTransformation()) {
                         set(result, path, get(transformer.reverseTransformedValue(value), path));
                     } else {
                         set(result, path, get(value, path));
