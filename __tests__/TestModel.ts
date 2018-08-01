@@ -1,4 +1,4 @@
-import { JSONSerializable, ValueTransformer, ModelClass } from "../lib";
+import { JSONSerializable, ValueTransformer, ModelClass, JSONAdapter } from "../lib";
 import { URL } from "url";
 
 export class TestModel extends JSONSerializable {
@@ -216,5 +216,41 @@ export class StrawberryClassClusterModel extends ClassClusterModel {
         return Object.assign(super.JSONKeyPathsByPropertyKey(), {
             "freshness": "strawberry_freshness",
         });
+    }
+}
+
+export class RecursiveUserModel extends JSONSerializable {
+    name: string;
+    groups: RecursiveGroupModel[];
+
+    static JSONKeyPathsByPropertyKey() {
+        return {
+            "name": "name_",
+            "groups": "groups_",
+        };
+    }
+
+    static groupsJSONTransformer(): ValueTransformer {
+        return JSONAdapter.arrayTransformerWithModelClass(RecursiveGroupModel);
+    }
+}
+
+export class RecursiveGroupModel extends JSONSerializable {
+    owner: RecursiveUserModel;
+    users: RecursiveUserModel[];
+
+    static JSONKeyPathsByPropertyKey() {
+        return {
+            "owner": "owner_",
+            "users": "users_",
+        };
+    }
+
+    static ownerJSONTransformer(): ValueTransformer {
+        return JSONAdapter.dictionaryTransformerWithModelClass(RecursiveUserModel);
+    }
+
+    static usersJSONTransformer(): ValueTransformer {
+        return JSONAdapter.arrayTransformerWithModelClass(RecursiveUserModel);
     }
 }

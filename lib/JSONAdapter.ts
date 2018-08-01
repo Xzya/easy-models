@@ -5,6 +5,7 @@ import { ValueTransformer } from "./ValueTransformer";
 
 export enum MantleErrorTypes {
     JSONAdapterNoClassFound = "JSONAdapterNoClassFoundError",
+    TransformerHandlingInvalidInput = "TransformerHandlingInvalidInput",
 }
 
 export class MantleError extends Error {
@@ -226,20 +227,128 @@ export class JSONAdapter {
     }
 
     /**
+     * Converts an array of models into a JSON string.
+     * 
+     * @param models An array of models to use for JSON serialization.
+     */
+    static JSONArrayFromModels<T extends JSONSerializable>(models: T[]): string | undefined {
+        return JSON.stringify(JSONAdapter.arrayFromModels(models));
+    }
+
+    /**
+     * Converts an array of models into an object array.
+     * 
+     * @param models An array of models to use for JSON serialization.
+     */
+    static arrayFromModels<T extends JSONSerializable>(models: T[]): any[] | undefined {
+        if (models == null) return undefined;
+
+        const objectArray: any[] = [];
+
+        for (let model of models) {
+            const object = JSONAdapter.objectFromModel(model);
+
+            if (!object) return undefined;
+
+            objectArray.push(object);
+        }
+
+        return objectArray;
+    }
+
+    /**
      * Creates a reversible transformer to convert an object into a Model object, and vice-versa.
      * 
      * @param modelClass The Model subclass to attempt to parse from the JSON.
      */
     static dictionaryTransformerWithModelClass(modelClass: ModelClass): ValueTransformer {
         return ValueTransformer.usingForwardAndReversibleBlocks((value) => {
-            if (value == null) return undefined;
+            if (value == null) return null;
+
+            // make sure the value is an object
+            if (typeof value !== "object") {
+                throw CreateError(`Could not convert JSON object to model object. Expected an object, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+            }
 
             return JSONAdapter.modelFromObject(value, modelClass);
         }, (value) => {
-            if (value == null) return undefined;
+            if (value == null) return null;
 
             return JSONAdapter.objectFromModel(value);
         });
     }
 
+    /**
+     * Creates a reversible transformer to convert an array of objects into an array of Model
+     * objects, and vice-versa.
+     * 
+     * @param modelClass The Model subclass to attempt to parse from each JSON object.
+     */
+    static arrayTransformerWithModelClass(modelClass: ModelClass): ValueTransformer {
+        return ValueTransformer.usingForwardAndReversibleBlocks((value) => {
+            // make sure we have a value
+            if (value == null) return undefined;
+
+            // make sure the value is an array
+            if (!Array.isArray(value)) {
+                throw CreateError(`Could not convert JSON array to model array. Expected an array, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+            }
+
+            const models: any[] = [];
+
+            for (let object of value) {
+                // if the object is null, just add null
+                if (object == null) {
+                    models.push(null);
+                    continue;
+                }
+
+                // make sure the value is an object
+                if (typeof object !== "object") {
+                    throw CreateError(`Could not convert JSON array to model array. Expected an object or null, got: ${object}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                }
+
+                // convert the model
+                const model = JSONAdapter.modelFromObject(object, modelClass);
+
+                if (!model) continue;
+
+                models.push(model);
+            }
+
+            return models;
+
+        }, (value) => {
+            if (value == null) return undefined;
+
+            // make sure the value is an array
+            if (!Array.isArray(value)) {
+                throw CreateError(`Could not convert model array to JSON array. Expected an array, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+            }
+
+            const objects: any[] = [];
+
+            for (let model of value) {
+                // if the object is null, just add null
+                if (model == null) {
+                    objects.push(null);
+                    continue;
+                }
+
+                // make sure the value is an object
+                if (typeof model !== "object") {
+                    throw CreateError(`Could not convert model array to JSON array. Expected a model or null, got: ${model}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                }
+
+                // convert the model
+                const object = JSONAdapter.objectFromModel(model);
+
+                if (!object) continue;
+
+                objects.push(object);
+            }
+
+            return objects;
+        });
+    }
 }
