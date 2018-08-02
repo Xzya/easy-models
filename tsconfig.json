@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es6",
+    "target": "es5",
     "lib": [
       "es6"
     ],
@@ -19,7 +19,8 @@
     "preserveConstEnums": true,
     "suppressImplicitAnyIndexErrors": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true
+    "strict": true,
+    "declaration": true
   },
   "include": [
     "lib"
