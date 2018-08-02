@@ -2,22 +2,8 @@ import get = require("lodash.get");
 import set = require("lodash.set");
 import { JSONSerializable, ModelClass } from "./JSONSerializable";
 import { ValueTransformer } from "./ValueTransformer";
-
-export enum MantleErrorTypes {
-    JSONAdapterNoClassFound = "JSONAdapterNoClassFoundError",
-    TransformerHandlingInvalidInput = "TransformerHandlingInvalidInput",
-}
-
-export class MantleError extends Error {
-
-}
-
-function CreateError(msg: string, name: MantleErrorTypes) {
-    const error = new MantleError(msg);
-    error.name = name;
-
-    return error;
-}
+import { CreateError } from "./utils";
+import { MantleErrorTypes } from "./constants";
 
 type ValueTransformerMap = {
     [key: string]: ValueTransformer;

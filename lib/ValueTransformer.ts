@@ -1,4 +1,6 @@
 import isEqual = require("lodash.isequal");
+import { CreateError } from "./utils";
+import { MantleErrorTypes } from "./constants";
 
 type AnyMap = {
     [key: string]: any;
@@ -111,6 +113,46 @@ export class ValueTransformer {
                 return reverseDefaultValue;
             }
         );
+    }
+
+    /**
+     * A reversible value transformer to transform between a number and it's string representation.
+     * 
+     * Returns a transformer which will map from strings to numbers for forward transformations, and
+     * from numbers to strings for reverse transformations.
+     * 
+     * @param locales A locale string or array of locale strings that contain one or more language or locale tags. If you include more than one locale string, list them in descending order of priority so that the first entry is the preferred locale. If you omit this parameter, the default locale of the JavaScript runtime is used.
+     * @param options An object that contains one or more properties that specify comparison options.
+     */
+    static numberTransformer(locales?: string | string[], options?: Intl.NumberFormatOptions) {
+        return ValueTransformer.usingForwardAndReversibleBlocks(
+            (value: string) => {
+                if (value == null) return null;
+
+                // make sure the value is a string
+                if (typeof value !== "string") {
+                    throw CreateError(`Could not convert string to number. Expected a string as input, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                }
+
+                const num = parseFloat(value);
+
+                if (isNaN(num)) {
+                    return null;
+                }
+
+                return num;
+            },
+            (value: number) => {
+                if (value == null) return null;
+
+                // make sure the value is a number
+                if (typeof value !== "number" || isNaN(value)) {
+                    throw CreateError(`Could not convert number to string. Expected a number as input, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                }
+
+                return value.toLocaleString(locales, options);
+            }
+        )
     }
 
 }

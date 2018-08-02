@@ -1,4 +1,4 @@
-import { JSONSerializable, ValueTransformer, ModelClass, JSONAdapter } from "../lib";
+import { JSONSerializable, ValueTransformer, ModelClass, JSONAdapter, KeyPaths } from "../lib";
 import { URL } from "url";
 
 export class TestModel extends JSONSerializable {
@@ -27,7 +27,7 @@ export class TestModel extends JSONSerializable {
         this.count = 1;
     }
 
-    static JSONKeyPathsByPropertyKey() {
+    static JSONKeyPathsByPropertyKey(): KeyPaths<TestModel> {
         return {
             "name": "username",
             "count": "count",
@@ -71,7 +71,7 @@ export class MultiKeypathModel extends JSONSerializable {
      */
     nestedLocation: Coordinate;
 
-    static JSONKeyPathsByPropertyKey() {
+    static JSONKeyPathsByPropertyKey(): KeyPaths<MultiKeypathModel> {
         return {
             "location": ["latitude", "longitude"],
             "nestedLocation": ["nested.latitude", "nested.longitude"]
@@ -115,7 +115,7 @@ export class URLModel extends JSONSerializable {
         this.url = new URL("http://github.com");
     }
 
-    static JSONKeyPathsByPropertyKey() {
+    static JSONKeyPathsByPropertyKey(): KeyPaths<URLModel> {
         return {
             "url": "url",
         };
@@ -140,7 +140,7 @@ export class URLModel extends JSONSerializable {
  * Parses MTLTestModel objects from JSON instead.
  */
 export class SubstitutingTestModel extends JSONSerializable {
-    static JSONKeyPathsByPropertyKey() {
+    static JSONKeyPathsByPropertyKey(): KeyPaths<SubstitutingTestModel> {
         return {};
     }
 
@@ -155,7 +155,7 @@ export class SubstitutingTestModel extends JSONSerializable {
 export class ClassClusterModel extends JSONSerializable {
     flavor: string;
 
-    static JSONKeyPathsByPropertyKey() {
+    static JSONKeyPathsByPropertyKey(): KeyPaths<ClassClusterModel> {
         return {
             "flavor": "flavor",
         };
@@ -184,7 +184,7 @@ export class ChocolateClassClusterModel extends ClassClusterModel {
         return "chocolate";
     }
 
-    static JSONKeyPathsByPropertyKey() {
+    static JSONKeyPathsByPropertyKey(): KeyPaths<ChocolateClassClusterModel> {
         return Object.assign(super.JSONKeyPathsByPropertyKey(), {
             "bitterness": "chocolate_bitterness",
         });
@@ -212,7 +212,7 @@ export class StrawberryClassClusterModel extends ClassClusterModel {
         return "strawberry";
     }
 
-    static JSONKeyPathsByPropertyKey() {
+    static JSONKeyPathsByPropertyKey(): KeyPaths<StrawberryClassClusterModel> {
         return Object.assign(super.JSONKeyPathsByPropertyKey(), {
             "freshness": "strawberry_freshness",
         });
@@ -239,7 +239,7 @@ export class RecursiveGroupModel extends JSONSerializable {
     owner: RecursiveUserModel;
     users: RecursiveUserModel[];
 
-    static JSONKeyPathsByPropertyKey() {
+    static JSONKeyPathsByPropertyKey(): KeyPaths<RecursiveGroupModel> {
         return {
             "owner": "owner_",
             "users": "users_",

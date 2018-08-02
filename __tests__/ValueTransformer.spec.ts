@@ -1,4 +1,5 @@
 import { ValueTransformer } from "../lib";
+import { MantleErrorTypes } from "../lib/constants";
 
 describe("ValueTransformer", () => {
     it("should return a forward transformer with a block", () => {
@@ -89,5 +90,47 @@ describe("value mapping transformer", () => {
         it("should transform the default enum value into the default string", () => {
             expect(transformer.reverseTransformedValue(AdditionTypes.Default)).toEqual("default");
         });
+    });
+});
+
+describe("number transformer", () => {
+    let transformer: ValueTransformer;
+
+    beforeEach(() => {
+        transformer = ValueTransformer.numberTransformer("en-US");
+    });
+
+    it("should transform strings into numbers", () => {
+        expect(transformer.transformedValue("0.12345")).toEqual(0.12345);
+    });
+
+    it("should transform numbers into strings", () => {
+        expect(transformer.reverseTransformedValue(12345.678)).toEqual("12,345.678");
+    });
+
+    it("should throw error on invalid transform value", () => {
+        let error: Error | undefined;
+
+        try {
+            transformer.transformedValue({});
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).toBeDefined();
+        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+    });
+
+    it("should throw error on invalid reverse transform value", () => {
+        let error: Error | undefined;
+
+        try {
+            transformer.reverseTransformedValue({});
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).toBeDefined();
+        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
     });
 });

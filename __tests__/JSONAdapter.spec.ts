@@ -1,5 +1,6 @@
-import { JSONAdapter, MantleErrorTypes } from "../lib";
+import { JSONAdapter } from "../lib";
 import { TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel, RecursiveGroupModel } from "./TestModel";
+import { MantleErrorTypes } from "../lib/constants";
 
 describe("JSONAdapter", () => {
     it("should initialize nested key paths from JSON", () => {

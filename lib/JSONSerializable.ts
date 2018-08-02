@@ -4,6 +4,10 @@ export type JSONKeyPathsByPropertyKey = {
     [key: string]: string | string[];
 };
 
+export type KeyPaths<T> = {
+    [K in keyof T]?: string | string[];
+};
+
 export type Newable<T> = { new(...args: any[]): T; };
 
 /**
