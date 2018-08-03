@@ -1,5 +1,4 @@
 import { JSONSerializable, ValueTransformer, ModelClass, JSONAdapter, KeyPaths } from "../lib";
-import { URL } from "url";
 
 export class TestModel extends JSONSerializable {
     /**
@@ -103,6 +102,20 @@ export class MultiKeypathModel extends JSONSerializable {
     }
 }
 
+export class URL {
+    url: string;
+
+    constructor(url: string) {
+        const re = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+
+        if (!re.test(url)) {
+            throw new Error(`Invalid url: ${url}`);
+        }
+
+        this.url = url;
+    }
+}
+
 export class URLModel extends JSONSerializable {
     /**
      * Defaults to http://github.com.
@@ -133,6 +146,33 @@ export class URLModel extends JSONSerializable {
                 throw new Error("Invalid URL");
             }
         )
+    }
+}
+
+export class URLSubclassModel extends URLModel {
+    /**
+     * Defaults to http://foo.com.
+     */
+    otherUrl: URL;
+
+    constructor() {
+        super();
+
+        this.otherUrl = new URL("http://foo.com");
+    }
+
+    static JSONKeyPathsByPropertyKey(): KeyPaths<URLSubclassModel> {
+        return {
+            ...super.JSONKeyPathsByPropertyKey(),
+            "otherUrl": "otherUrl",
+        };
+    }
+
+    static JSONTransformerForKey(key: string): ValueTransformer {
+        if (key === "otherUrl") {
+            return URLModel.urlJSONTransformer();
+        }
+        return undefined;
     }
 }
 
@@ -185,9 +225,10 @@ export class ChocolateClassClusterModel extends ClassClusterModel {
     }
 
     static JSONKeyPathsByPropertyKey(): KeyPaths<ChocolateClassClusterModel> {
-        return Object.assign(super.JSONKeyPathsByPropertyKey(), {
+        return {
+            ...super.JSONKeyPathsByPropertyKey(),
             "bitterness": "chocolate_bitterness",
-        });
+        };
     }
 
     static bitternessJSONTransformer(): ValueTransformer {
@@ -213,9 +254,10 @@ export class StrawberryClassClusterModel extends ClassClusterModel {
     }
 
     static JSONKeyPathsByPropertyKey(): KeyPaths<StrawberryClassClusterModel> {
-        return Object.assign(super.JSONKeyPathsByPropertyKey(), {
+        return {
+            ...super.JSONKeyPathsByPropertyKey(),
             "freshness": "strawberry_freshness",
-        });
+        };
     }
 }
 

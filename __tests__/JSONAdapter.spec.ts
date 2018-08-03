@@ -1,8 +1,40 @@
 import { JSONAdapter } from "../lib";
-import { TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel, RecursiveGroupModel } from "./TestModel";
+import { TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel, RecursiveGroupModel, URLSubclassModel, URL } from "./TestModel";
 import { MantleErrorTypes } from "../lib/constants";
 
 describe("JSONAdapter", () => {
+    it("should initialize nested key paths from JSON string", () => {
+        const values = JSON.stringify({
+            "username": null,
+            "count": "5",
+        });
+
+        let model: TestModel;
+        let error: Error | undefined;
+
+        try {
+            model = JSONAdapter.modelFromJSON<TestModel>(values, TestModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(model).toBeDefined();
+        expect(error).not.toBeDefined();
+
+        expect(model.name).toBeNull();
+        expect(model.count).toEqual(5);
+
+        const expected = {
+            "username": null,
+            "count": "5",
+            "nested": {
+                "name": null
+            }
+        }
+
+        expect(JSONAdapter.objectFromModel(model)).toEqual(expected);
+    });
+
     it("should initialize nested key paths from JSON", () => {
         const values = {
             "username": null,
@@ -168,6 +200,28 @@ describe("JSONAdapter", () => {
         expect(error).toBeDefined();
     });
 
+    it("should use JSONTransformerForKey transformer", () => {
+        const values = {
+            "url": "http://github.com/1",
+            "otherUrl": "http://github.com/2",
+        };
+
+        let model: URLSubclassModel;
+        let error: Error | undefined;
+
+        try {
+            model = JSONAdapter.modelFromObject<URLSubclassModel>(values, URLSubclassModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(model).toBeDefined();
+        expect(error).not.toBeDefined();
+
+        expect(model.url).toEqual(new URL("http://github.com/1"));
+        expect(model.otherUrl).toEqual(new URL("http://github.com/2"));
+    });
+
     it("should fail to serialize if a JSON transformer errors", () => {
         const model = new URLModel();
 
@@ -267,6 +321,19 @@ describe("JSONAdapter", () => {
     });
 
 
+    it("should return null model from null input", () => {
+        let model: TestModel;
+        let error: Error | undefined;
+
+        try {
+            model = JSONAdapter.modelFromJSON<TestModel>(null, TestModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(model).toBeNull();
+        expect(error).not.toBeDefined();
+    });
 });
 
 
@@ -280,7 +347,24 @@ describe("Deserializing multiple models", () => {
         }
     ];
 
-    it("should initialize models from an array of JSON dictionaries", () => {
+    it("should initialize models from a JSON string of an array", () => {
+        let models: TestModel[];
+        let error: Error | undefined;
+
+        try {
+            models = JSONAdapter.modelsFromJSONArray<TestModel>(JSON.stringify(jsonModels), TestModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).not.toBeDefined();
+        expect(models).toBeDefined();
+        expect(models.length).toEqual(2);
+        expect(models[0].name).toEqual("foo");
+        expect(models[1].name).toEqual("bar");
+    });
+
+    it("should initialize models from an array of objects", () => {
         let models: TestModel[];
         let error: Error | undefined;
 
@@ -323,28 +407,44 @@ it("should return undefined and an error if it fails to initialize any model fro
     expect(models).toBeUndefined();
 });
 
-it("should return an array of dictionaries from models", () => {
+describe("serialize array of objects from models", () => {
     const model1 = new TestModel();
     model1.name = "foo";
 
     const model2 = new TestModel();
     model2.name = "bar";
 
-    let objects: any[];
-    let error: Error | undefined;
+    it("should return a JSON array of objects from models", () => {
+        let objects: string | undefined;
+        let error: Error | undefined;
 
-    try {
-        objects = JSONAdapter.arrayFromModels([model1, model2]);
-    } catch (err) {
-        error = err;
-    }
+        try {
+            objects = JSONAdapter.JSONArrayFromModels([model1, model2]);
+        } catch (err) {
+            error = err;
+        }
 
-    expect(error).not.toBeDefined();
+        expect(error).not.toBeDefined();
+        expect(objects).toBeDefined();
+    });
 
-    expect(objects).toBeDefined();
-    expect(objects.length).toEqual(2);
-    expect(objects[0].username).toEqual("foo");
-    expect(objects[1].username).toEqual("bar");
+    it("should return an array of objects from models", () => {
+        let objects: any[];
+        let error: Error | undefined;
+
+        try {
+            objects = JSONAdapter.arrayFromModels([model1, model2]);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).not.toBeDefined();
+
+        expect(objects).toBeDefined();
+        expect(objects.length).toEqual(2);
+        expect(objects[0].username).toEqual("foo");
+        expect(objects[1].username).toEqual("bar");
+    });
 });
 
 it("should support recursive models", () => {

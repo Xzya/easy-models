@@ -65,7 +65,7 @@ export class JSONAdapter {
      * @param jsonString A JSON string.
      * @param modelClass The model to use for JSON serialization.
      */
-    static modelFromJSON<T extends JSONSerializable>(jsonString: string, modelClass: ModelClass): T | undefined {
+    static modelFromJSON<T extends JSONSerializable>(jsonString: string, modelClass: ModelClass): T | null {
         return JSONAdapter.modelFromObject(JSON.parse(jsonString), modelClass);
     }
 
@@ -75,8 +75,8 @@ export class JSONAdapter {
      * @param json An object.
      * @param modelClass The model to use for JSON serialization
      */
-    static modelFromObject<T extends JSONSerializable>(json: any, modelClass: ModelClass): T | undefined {
-        if (json == null) return undefined;
+    static modelFromObject<T extends JSONSerializable>(json: any, modelClass: ModelClass): T | null {
+        if (json == null) return null;
 
         // if the class implements classForParsingObject
         if (modelClass.classForParsingObject) {
