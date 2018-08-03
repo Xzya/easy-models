@@ -34,13 +34,23 @@ describe("ValueTransformer", () => {
             (value: string) => {
                 return value.substring(0, value.length - 3);
             }
-        )
+        );
 
         expect(transformer).toBeDefined();
         expect(transformer.allowsReverseTransformation()).toBeTruthy();
 
         expect(transformer.transformedValue("foo")).toEqual("foobar");
         expect(transformer.reverseTransformedValue("foobar")).toEqual("foo");
+    });
+
+    it("should return undefined with null transformers blocks", () => {
+        const transformer = ValueTransformer.usingForwardAndReversibleBlocks(null, null);
+
+        expect(transformer).toBeDefined();
+        expect(transformer.allowsReverseTransformation()).toBeFalsy();
+
+        expect(transformer.transformedValue("foo")).not.toBeDefined();
+        expect(transformer.reverseTransformedValue("foo")).not.toBeDefined();
     });
 });
 
@@ -132,5 +142,14 @@ describe("number transformer", () => {
 
         expect(error).toBeDefined();
         expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+    });
+
+    it("should return null on null input", () => {
+        expect(transformer.transformedValue(null)).toEqual(null);
+        expect(transformer.reverseTransformedValue(null)).toEqual(null);
+    });
+
+    it("should return null on NaN parsed input", () => {
+        expect(transformer.transformedValue("foo")).toEqual(null);
     });
 });
