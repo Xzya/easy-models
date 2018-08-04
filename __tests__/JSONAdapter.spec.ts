@@ -1,70 +1,59 @@
-import { JSONAdapter } from "../lib";
-import { TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel, RecursiveGroupModel, URLSubclassModel, URL, HostedURLsModel, DefaultValuesModel, ClassClusterModel } from "./TestModel";
+import { JSONAdapter, JSONSerializable } from "../lib";
+import { TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel, RecursiveGroupModel, URLSubclassModel, URL, HostedURLsModel, DefaultValuesModel, ClassClusterModel, InvalidTransformersModel } from "./TestModel";
 import { MantleErrorTypes } from "../lib/constants";
 
 describe("JSONAdapter", () => {
-    it("should initialize nested key paths from JSON string", () => {
-        const values = JSON.stringify({
-            "username": null,
-            "count": "5",
-        });
-
-        let model: TestModel;
-        let error: Error | undefined;
-
-        try {
-            model = JSONAdapter.modelFromJSON<TestModel>(values, TestModel);
-        } catch (err) {
-            error = err;
-        }
-
-        expect(model).toBeDefined();
-        expect(error).not.toBeDefined();
-
-        expect(model.name).toBeNull();
-        expect(model.count).toEqual(5);
-
-        const expected = {
-            "username": null,
-            "count": "5",
-            "nested": {
-                "name": null
-            }
-        }
-
-        expect(JSONAdapter.objectFromModel(model)).toEqual(expected);
-    });
-
-    it("should initialize nested key paths from JSON", () => {
+    describe("serialize nested key paths", () => {
         const values = {
             "username": null,
             "count": "5",
         };
 
-        let model: TestModel;
-        let error: Error | undefined;
-
-        try {
-            model = JSONAdapter.modelFromObject<TestModel>(values, TestModel);
-        } catch (err) {
-            error = err;
-        }
-
-        expect(model).toBeDefined();
-        expect(error).not.toBeDefined();
-
-        expect(model.name).toBeNull();
-        expect(model.count).toEqual(5);
-
         const expected = {
             "username": null,
             "count": "5",
             "nested": {
                 "name": null
             }
-        }
+        };
 
-        expect(JSONAdapter.objectFromModel(model)).toEqual(expected);
+        it("should initialize nested key paths from JSON string", () => {
+            let model: TestModel;
+            let error: Error | undefined;
+
+            try {
+                model = JSONAdapter.modelFromJSON<TestModel>(JSON.stringify(values), TestModel);
+            } catch (err) {
+                error = err;
+            }
+
+            expect(model).toBeDefined();
+            expect(error).not.toBeDefined();
+
+            expect(model.name).toBeNull();
+            expect(model.count).toEqual(5);
+
+            expect(JSONAdapter.objectFromModel(model)).toEqual(expected);
+        });
+
+        it("should initialize nested key paths from JSON", () => {
+            let model: TestModel;
+            let error: Error | undefined;
+
+            try {
+                model = JSONAdapter.modelFromObject<TestModel>(values, TestModel);
+            } catch (err) {
+                error = err;
+            }
+
+            expect(model).toBeDefined();
+            expect(error).not.toBeDefined();
+
+            expect(model.name).toBeNull();
+            expect(model.count).toEqual(5);
+
+            expect(JSONAdapter.objectFromModel(model)).toEqual(expected);
+        });
     });
 
     it("should initialize nested key paths from JSON", () => {
@@ -362,6 +351,27 @@ describe("JSONAdapter", () => {
         expect(model).toBeNull();
         expect(error).not.toBeDefined();
     });
+
+    it("should ignore invalid transformers", () => {
+        const values = {
+            "foo": "foo",
+            "bar": "bar",
+        };
+
+        let model: InvalidTransformersModel;
+        let error: Error | undefined;
+
+        try {
+            model = JSONAdapter.modelFromObject<InvalidTransformersModel>(values, InvalidTransformersModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).toBeUndefined();
+        expect(model).toBeDefined();
+        expect(model.foo).toEqual("foo");
+        expect(model.bar).toEqual("bar");
+    });
 });
 
 
@@ -524,6 +534,35 @@ describe("serialize array of objects from models", () => {
         expect(objects[0].username).toEqual("foo");
         expect(objects[1].username).toEqual("bar");
     });
+
+    it("should return null from null models", () => {
+        let objects: any[];
+        let error: Error | undefined;
+
+        try {
+            objects = JSONAdapter.arrayFromModels(null);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).toBeUndefined();
+        expect(objects).toBeNull();
+    });
+
+    it("should throw exception on non-array input", () => {
+        let objects: any[];
+        let error: Error | undefined;
+
+        try {
+            objects = JSONAdapter.arrayFromModels({} as JSONSerializable[]);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(objects).toBeUndefined();
+        expect(error).toBeDefined();
+        expect(error.name).toEqual(MantleErrorTypes.JSONAdapterInvalidJSON);
+    });
 });
 
 describe("recursive models", () => {
@@ -559,6 +598,10 @@ describe("recursive models", () => {
                                 ]
                             },
                             "users_": null
+                        },
+                        {
+                            "owner_": null,
+                            "users_": null
                         }
                     ]
                 },
@@ -590,13 +633,15 @@ describe("recursive models", () => {
         expect(model.users.length).toEqual(2);
         expect(model.users[0].name).toEqual("Dimitri");
         expect(model.users[0].groups).toBeDefined();
-        expect(model.users[0].groups.length).toEqual(1);
+        expect(model.users[0].groups.length).toEqual(2);
         expect(model.users[0].groups[0].owner).toBeDefined();
         expect(model.users[0].groups[0].owner.name).toEqual("Doe");
         expect(model.users[0].groups[0].owner.groups).toBeDefined();
         expect(model.users[0].groups[0].owner.groups.length).toEqual(1);
         expect(model.users[0].groups[0].owner.groups[0].owner).toBeDefined();
         expect(model.users[0].groups[0].owner.groups[0].owner.name).toEqual("X");
+        expect(model.users[0].groups[1].owner).toBeNull();
+        expect(model.users[0].groups[1].users).toBeNull();
 
         expect(JSONAdapter.objectFromModel(model)).toEqual(values);
     });

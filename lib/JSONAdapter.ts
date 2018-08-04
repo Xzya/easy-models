@@ -233,13 +233,20 @@ export class JSONAdapter {
      * @param models An array of models to use for JSON serialization.
      */
     static arrayFromModels<T extends JSONSerializable>(models: T[]): any[] | null {
+        // make sure we have a value
         if (models == null) return null;
+
+        // make sure the value is an array
+        if (!Array.isArray(models)) {
+            throw CreateError(`Could not create object array because an invalid model array was provided: ${models}.`, MantleErrorTypes.JSONAdapterInvalidJSON);
+        }
 
         const objectArray: any[] = [];
 
         for (const model of models) {
             const object = JSONAdapter.objectFromModel(model);
 
+            /* istanbul ignore next */
             if (!object) return null;
 
             objectArray.push(object);
@@ -303,6 +310,7 @@ export class JSONAdapter {
                 // convert the model
                 const model = JSONAdapter.modelFromObject(object, Class);
 
+                /* istanbul ignore next */
                 if (!model) continue;
 
                 models.push(model);
@@ -335,6 +343,7 @@ export class JSONAdapter {
                 // convert the model
                 const object = JSONAdapter.objectFromModel(model);
 
+                /* istanbul ignore next */
                 if (!object) continue;
 
                 objects.push(object);

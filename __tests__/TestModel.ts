@@ -44,9 +44,11 @@ export class TestModel extends JSONSerializable {
                 return null;
             },
             (value?: number) => {
+                /* istanbul ignore else */
                 if (value != null) {
                     return value.toString();
                 }
+                /* istanbul ignore next */
                 return null;
             }
         )
@@ -166,10 +168,10 @@ export class URLSubclassModel extends URLModel {
     }
 
     static JSONTransformerForKey(key: string): ValueTransformer {
+        /* istanbul ignore else */
         if (key === "otherUrl") {
             return URLModel.urlJSONTransformer();
         }
-        return undefined;
     }
 }
 
@@ -177,6 +179,7 @@ export class URLSubclassModel extends URLModel {
  * Parses MTLTestModel objects from JSON instead.
  */
 export class SubstitutingTestModel extends JSONSerializable {
+    /* istanbul ignore next */
     static JSONKeyPathsByPropertyKey(): KeyPaths<SubstitutingTestModel> {
         return {};
     }
@@ -203,11 +206,10 @@ export class ClassClusterModel extends JSONSerializable {
             return ChocolateClassClusterModel;
         }
 
+        /* istanbul ignore else */
         if (json.flavor === "strawberry") {
             return StrawberryClassClusterModel;
         }
-
-        return undefined;
     }
 }
 
@@ -326,5 +328,25 @@ export class DefaultValuesModel extends JSONSerializable {
         return {
             name: "name",
         };
+    }
+}
+
+export class InvalidTransformersModel extends JSONSerializable {
+    foo: string;
+    bar: string;
+
+    static JSONKeyPathsByPropertyKey(): KeyPaths<InvalidTransformersModel> {
+        return {
+            foo: "foo",
+            bar: "bar",
+        };
+    }
+
+    static fooJSONTransformer() {
+        return null;
+    }
+
+    static JSONTransformerForKey() {
+        return null;
     }
 }
