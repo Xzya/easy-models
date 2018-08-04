@@ -78,14 +78,11 @@ export class MultiKeypathModel extends JSONSerializable {
     }
 
     static locationJSONTransformer(): ValueTransformer {
-        return ValueTransformer.usingForwardAndReversibleBlocks(
+        return ValueTransformer.usingForwardBlock(
             (value) => {
                 return value;
-            },
-            (value: Coordinate) => {
-                return value;
             }
-        )
+        );
     }
 
     static nestedLocationJSONTransformer(): ValueTransformer {

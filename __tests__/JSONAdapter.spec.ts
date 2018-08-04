@@ -436,6 +436,28 @@ it("should return undefined and an error if it fails to initialize any model fro
     expect(models).toBeUndefined();
 });
 
+it("should return null if it fails to parse any model from an array", () => {
+    const jsonModels = [
+        {
+            "username": "foo",
+            "count": "1"
+        },
+        null
+    ];
+
+    let models: SubstitutingTestModel[];
+    let error: Error | undefined;
+
+    try {
+        models = JSONAdapter.modelsFromArray<SubstitutingTestModel>(jsonModels, SubstitutingTestModel);
+    } catch (err) {
+        error = err;
+    }
+
+    expect(error).not.toBeDefined();
+    expect(models).toBeNull();
+});
+
 describe("serialize array of objects from models", () => {
     const model1 = new TestModel();
     model1.name = "foo";
@@ -476,76 +498,116 @@ describe("serialize array of objects from models", () => {
     });
 });
 
-it("should support recursive models", () => {
-    const values = {
-        "owner_": {
-            "name_": "Cameron",
-            "groups_": [
-                {
-                    "owner_": {
-                        "name_": "Jane",
-                        "groups_": null
-                    },
-                    "users_": null
-                }
-            ]
-        },
-        "users_": [
-            {
-                "name_": "Dimitri",
+describe("recursive models", () => {
+    it("should support recursive models", () => {
+        const values = {
+            "owner_": {
+                "name_": "Cameron",
                 "groups_": [
                     {
                         "owner_": {
-                            "name_": "Doe",
-                            "groups_": [
-                                {
-                                    "owner_": {
-                                        "name_": "X",
-                                        "groups_": null
-                                    },
-                                    "users_": null
-                                }
-                            ]
+                            "name_": "Jane",
+                            "groups_": null
                         },
                         "users_": null
                     }
                 ]
             },
-            {
-                "name_": "John",
-                "groups_": null
-            }
-        ]
-    };
+            "users_": [
+                {
+                    "name_": "Dimitri",
+                    "groups_": [
+                        {
+                            "owner_": {
+                                "name_": "Doe",
+                                "groups_": [
+                                    {
+                                        "owner_": {
+                                            "name_": "X",
+                                            "groups_": null
+                                        },
+                                        "users_": null
+                                    }
+                                ]
+                            },
+                            "users_": null
+                        }
+                    ]
+                },
+                {
+                    "name_": "John",
+                    "groups_": null
+                }
+            ]
+        };
 
-    let model: RecursiveGroupModel;
-    let error: Error | undefined;
+        let model: RecursiveGroupModel;
+        let error: Error | undefined;
 
-    try {
-        model = JSONAdapter.modelFromObject<RecursiveGroupModel>(values, RecursiveGroupModel);
-    } catch (err) {
-        error = err;
-    }
+        try {
+            model = JSONAdapter.modelFromObject<RecursiveGroupModel>(values, RecursiveGroupModel);
+        } catch (err) {
+            error = err;
+        }
 
-    expect(error).not.toBeDefined();
-    expect(model).toBeDefined();
-    expect(model.owner).toBeDefined();
-    expect(model.owner.name).toEqual("Cameron");
-    expect(model.owner.groups).toBeDefined();
-    expect(model.owner.groups.length).toEqual(1);
-    expect(model.owner.groups[0].owner).toBeDefined();
-    expect(model.owner.groups[0].owner.name).toEqual("Jane");
-    expect(model.users).toBeDefined();
-    expect(model.users.length).toEqual(2);
-    expect(model.users[0].name).toEqual("Dimitri");
-    expect(model.users[0].groups).toBeDefined();
-    expect(model.users[0].groups.length).toEqual(1);
-    expect(model.users[0].groups[0].owner).toBeDefined();
-    expect(model.users[0].groups[0].owner.name).toEqual("Doe");
-    expect(model.users[0].groups[0].owner.groups).toBeDefined();
-    expect(model.users[0].groups[0].owner.groups.length).toEqual(1);
-    expect(model.users[0].groups[0].owner.groups[0].owner).toBeDefined();
-    expect(model.users[0].groups[0].owner.groups[0].owner.name).toEqual("X");
+        expect(error).not.toBeDefined();
+        expect(model).toBeDefined();
+        expect(model.owner).toBeDefined();
+        expect(model.owner.name).toEqual("Cameron");
+        expect(model.owner.groups).toBeDefined();
+        expect(model.owner.groups.length).toEqual(1);
+        expect(model.owner.groups[0].owner).toBeDefined();
+        expect(model.owner.groups[0].owner.name).toEqual("Jane");
+        expect(model.users).toBeDefined();
+        expect(model.users.length).toEqual(2);
+        expect(model.users[0].name).toEqual("Dimitri");
+        expect(model.users[0].groups).toBeDefined();
+        expect(model.users[0].groups.length).toEqual(1);
+        expect(model.users[0].groups[0].owner).toBeDefined();
+        expect(model.users[0].groups[0].owner.name).toEqual("Doe");
+        expect(model.users[0].groups[0].owner.groups).toBeDefined();
+        expect(model.users[0].groups[0].owner.groups.length).toEqual(1);
+        expect(model.users[0].groups[0].owner.groups[0].owner).toBeDefined();
+        expect(model.users[0].groups[0].owner.groups[0].owner.name).toEqual("X");
 
-    expect(JSONAdapter.objectFromModel(model)).toEqual(values);
+        expect(JSONAdapter.objectFromModel(model)).toEqual(values);
+    });
+
+    it("should throw error on non-object input", () => {
+        const values = {
+            "owner_": "foo"
+        };
+
+        let model: RecursiveGroupModel;
+        let error: Error | undefined;
+
+        try {
+            model = JSONAdapter.modelFromObject<RecursiveGroupModel>(values, RecursiveGroupModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(model).not.toBeDefined();
+        expect(error).toBeDefined();
+        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+    });
+
+    it("should throw error on non-array input", () => {
+        const values = {
+            "users_": {},
+        };
+
+        let model: RecursiveGroupModel;
+        let error: Error | undefined;
+
+        try {
+            model = JSONAdapter.modelFromObject<RecursiveGroupModel>(values, RecursiveGroupModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(model).not.toBeDefined();
+        expect(error).toBeDefined();
+        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+    });
 });

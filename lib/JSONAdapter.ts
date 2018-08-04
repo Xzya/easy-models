@@ -25,7 +25,7 @@ export class JSONAdapter {
         const jsonKeyPaths = model.JSONKeyPathsByPropertyKey();
 
         // iterate over all key paths
-        for (let key of Object.keys(jsonKeyPaths)) {
+        for (const key of Object.keys(jsonKeyPaths)) {
             // construct the method name for this property
             const methodName = `${key}JSONTransformer`;
 
@@ -99,7 +99,7 @@ export class JSONAdapter {
         const transformers = JSONAdapter.valueTransformersForModel(modelClass);
 
         // iterate over all key paths
-        for (let key of Object.keys(jsonKeyPaths)) {
+        for (const key of Object.keys(jsonKeyPaths)) {
             const keyPath = jsonKeyPaths[key];
 
             let value: any = {};
@@ -110,7 +110,7 @@ export class JSONAdapter {
             }
             // else it must be an array of strings
             else {
-                for (let path of keyPath) {
+                for (const path of keyPath) {
                     set(value, path, get(json, path));
                 }
             }
@@ -161,7 +161,7 @@ export class JSONAdapter {
 
         const models: T[] = [];
 
-        for (let object of json) {
+        for (const object of json) {
             const model = JSONAdapter.modelFromObject<T>(object, modelClass);
 
             if (!model) return null;
@@ -187,7 +187,7 @@ export class JSONAdapter {
         const jsonKeyPaths = modelClass.JSONKeyPathsByPropertyKey();
         const transformers = JSONAdapter.valueTransformersForModel(modelClass);
 
-        for (let key of Object.keys(jsonKeyPaths)) {
+        for (const key of Object.keys(jsonKeyPaths)) {
             const keyPath = jsonKeyPaths[key];
 
             const value = get(model, key);
@@ -205,7 +205,7 @@ export class JSONAdapter {
             }
             // else it must be an array of strings
             else {
-                for (let path of keyPath) {
+                for (const path of keyPath) {
                     if (transformer && transformer.allowsReverseTransformation()) {
                         set(result, path, get(transformer.reverseTransformedValue(value), path));
                     } else {
@@ -237,7 +237,7 @@ export class JSONAdapter {
 
         const objectArray: any[] = [];
 
-        for (let model of models) {
+        for (const model of models) {
             const object = JSONAdapter.objectFromModel(model);
 
             if (!object) return null;
@@ -288,7 +288,7 @@ export class JSONAdapter {
 
             const models: any[] = [];
 
-            for (let object of value) {
+            for (const object of value) {
                 // if the object is null, just add null
                 if (object == null) {
                     models.push(null);
@@ -320,7 +320,7 @@ export class JSONAdapter {
 
             const objects: any[] = [];
 
-            for (let model of value) {
+            for (const model of value) {
                 // if the object is null, just add null
                 if (model == null) {
                     objects.push(null);
