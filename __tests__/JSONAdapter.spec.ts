@@ -1,5 +1,5 @@
 import { JSONAdapter } from "../lib";
-import { TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel, RecursiveGroupModel, URLSubclassModel, URL, HostedURLsModel, DefaultValuesModel } from "./TestModel";
+import { TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel, RecursiveGroupModel, URLSubclassModel, URL, HostedURLsModel, DefaultValuesModel, ClassClusterModel } from "./TestModel";
 import { MantleErrorTypes } from "../lib/constants";
 
 describe("JSONAdapter", () => {
@@ -291,40 +291,46 @@ describe("JSONAdapter", () => {
     });
 
     it("should serialize different model classes", () => {
-        const chocolate = new ChocolateClassClusterModel();
-        chocolate.bitterness = 100;
+        const chocolateValues = {
+            "flavor": "chocolate",
+            "chocolate_bitterness": "100",
+        };
 
-        let chocolateValues: any;
+        let chocolateModel: ChocolateClassClusterModel;
         let error: Error | undefined;
 
         try {
-            chocolateValues = JSONAdapter.objectFromModel(chocolate);
+            chocolateModel = JSONAdapter.modelFromObject<ChocolateClassClusterModel>(chocolateValues, ClassClusterModel);
         } catch (err) {
             error = err;
         }
 
         expect(error).toBeUndefined();
-        expect(chocolateValues).toEqual({
-            "flavor": "chocolate",
-            "chocolate_bitterness": "100",
-        });
+        expect(chocolateModel).toBeDefined();
+        expect(chocolateModel.flavor).toEqual("chocolate");
+        expect(chocolateModel.bitterness).toEqual(100);
 
-        const strawberry = new StrawberryClassClusterModel();
-        strawberry.freshness = 20;
+        expect(JSONAdapter.objectFromModel(chocolateModel)).toEqual(chocolateValues);
 
-        let strawberryValues: any;
-
-        try {
-            strawberryValues = JSONAdapter.objectFromModel(strawberry);
-        } catch (err) {
-            error = err;
-        }
-
-        expect(error).toBeUndefined();
-        expect(strawberryValues).toEqual({
+        const strawberryValues = {
             "flavor": "strawberry",
             "strawberry_freshness": 20,
-        });
+        };
+
+        let strawberryModel: StrawberryClassClusterModel;
+
+        try {
+            strawberryModel = JSONAdapter.modelFromObject<StrawberryClassClusterModel>(strawberryValues, ClassClusterModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).toBeUndefined();
+        expect(strawberryModel).toBeDefined();
+        expect(strawberryModel.flavor).toEqual("strawberry");
+        expect(strawberryModel.freshness).toEqual(20);
+
+        expect(JSONAdapter.objectFromModel(strawberryModel)).toEqual(strawberryValues);
     });
 
     it("should return an error when no suitable model class is found", () => {
