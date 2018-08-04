@@ -79,7 +79,7 @@ export class JSONAdapter {
         if (json == null) return null;
 
         // if the class implements classForParsingObject
-        if (Class.classForParsingObject) {
+        if (Class.classForParsingObject && typeof Class.classForParsingObject === "function") {
             const classToUse = Class.classForParsingObject(json);
 
             // if the implementation didn't return any class
@@ -261,20 +261,23 @@ export class JSONAdapter {
      * @param Class The Model subclass to attempt to parse from the JSON.
      */
     static dictionaryTransformerWithModelClass(Class: ModelClass): ValueTransformer {
-        return ValueTransformer.usingForwardAndReversibleBlocks((value) => {
-            if (value == null) return null;
+        return ValueTransformer.usingForwardAndReversibleBlocks(
+            (value?: any) => {
+                if (value == null) return null;
 
-            // make sure the value is an object
-            if (typeof value !== "object") {
-                throw CreateError(`Could not convert JSON object to model object. Expected an object, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                // make sure the value is an object
+                if (typeof value !== "object") {
+                    throw CreateError(`Could not convert JSON object to model object. Expected an object, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                }
+
+                return JSONAdapter.modelFromObject(value, Class);
+            },
+            (value?: JSONSerializable) => {
+                if (value == null) return null;
+
+                return JSONAdapter.objectFromModel(value);
             }
-
-            return JSONAdapter.modelFromObject(value, Class);
-        }, (value) => {
-            if (value == null) return null;
-
-            return JSONAdapter.objectFromModel(value);
-        });
+        );
     }
 
     /**
