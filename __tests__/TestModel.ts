@@ -1,6 +1,6 @@
-import { JSONSerializable, ValueTransformer, ModelClass, JSONAdapter, KeyPaths } from "../lib";
+import { Serializable, ValueTransformer, ModelClass, JSONAdapter, KeyPaths } from "../lib";
 
-export class TestModel extends JSONSerializable {
+export class TestModel extends Serializable {
     /**
      * Must be less than 10 characters.
      * 
@@ -26,7 +26,7 @@ export class TestModel extends JSONSerializable {
         this.count = 1;
     }
 
-    static JSONKeyPathsByPropertyKey(): KeyPaths<TestModel> {
+    static JSONKeyPaths(): KeyPaths<TestModel> {
         return {
             "name": "username",
             "count": "count",
@@ -35,7 +35,7 @@ export class TestModel extends JSONSerializable {
     }
 
     static countJSONTransformer(): ValueTransformer {
-        return ValueTransformer.usingForwardAndReversibleBlocks(
+        return ValueTransformer.forwardAndReversible(
             (value: string) => {
                 const result = parseInt(value);
                 if (!isNaN(result)) {
@@ -60,7 +60,7 @@ interface Coordinate {
     longitude: number;
 }
 
-export class MultiKeypathModel extends JSONSerializable {
+export class MultiKeypathModel extends Serializable {
     /**
      * This property is associated with the "latitude" and "longitude" keys in JSON.
      */
@@ -72,7 +72,7 @@ export class MultiKeypathModel extends JSONSerializable {
      */
     nestedLocation: Coordinate;
 
-    static JSONKeyPathsByPropertyKey(): KeyPaths<MultiKeypathModel> {
+    static JSONKeyPaths(): KeyPaths<MultiKeypathModel> {
         return {
             "location": ["latitude", "longitude"],
             "nestedLocation": ["nested.latitude", "nested.longitude"]
@@ -80,7 +80,7 @@ export class MultiKeypathModel extends JSONSerializable {
     }
 
     static locationJSONTransformer(): ValueTransformer {
-        return ValueTransformer.usingForwardBlock(
+        return ValueTransformer.forward(
             (value) => {
                 return value;
             }
@@ -88,7 +88,7 @@ export class MultiKeypathModel extends JSONSerializable {
     }
 
     static nestedLocationJSONTransformer(): ValueTransformer {
-        return ValueTransformer.usingForwardAndReversibleBlocks(
+        return ValueTransformer.forwardAndReversible(
             (value) => {
                 return value.nested;
             },
@@ -115,7 +115,7 @@ export class URL {
     }
 }
 
-export class URLModel extends JSONSerializable {
+export class URLModel extends Serializable {
     /**
      * Defaults to http://github.com.
      */
@@ -127,14 +127,14 @@ export class URLModel extends JSONSerializable {
         this.url = new URL("http://github.com");
     }
 
-    static JSONKeyPathsByPropertyKey(): KeyPaths<URLModel> {
+    static JSONKeyPaths(): KeyPaths<URLModel> {
         return {
             "url": "url",
         };
     }
 
     static urlJSONTransformer(): ValueTransformer {
-        return ValueTransformer.usingForwardAndReversibleBlocks(
+        return ValueTransformer.forwardAndReversible(
             (value: string) => {
                 return new URL(value);
             },
@@ -160,9 +160,9 @@ export class URLSubclassModel extends URLModel {
         this.otherUrl = new URL("http://foo.com");
     }
 
-    static JSONKeyPathsByPropertyKey(): KeyPaths<URLSubclassModel> {
+    static JSONKeyPaths(): KeyPaths<URLSubclassModel> {
         return {
-            ...super.JSONKeyPathsByPropertyKey(),
+            ...super.JSONKeyPaths(),
             "otherUrl": "otherUrl",
         };
     }
@@ -178,9 +178,9 @@ export class URLSubclassModel extends URLModel {
 /**
  * Parses MTLTestModel objects from JSON instead.
  */
-export class SubstitutingTestModel extends JSONSerializable {
+export class SubstitutingTestModel extends Serializable {
     /* istanbul ignore next */
-    static JSONKeyPathsByPropertyKey(): KeyPaths<SubstitutingTestModel> {
+    static JSONKeyPaths(): KeyPaths<SubstitutingTestModel> {
         return {};
     }
 
@@ -192,10 +192,10 @@ export class SubstitutingTestModel extends JSONSerializable {
     }
 }
 
-export class ClassClusterModel extends JSONSerializable {
+export class ClassClusterModel extends Serializable {
     flavor: string;
 
-    static JSONKeyPathsByPropertyKey(): KeyPaths<ClassClusterModel> {
+    static JSONKeyPaths(): KeyPaths<ClassClusterModel> {
         return {
             "flavor": "flavor",
         };
@@ -223,15 +223,15 @@ export class ChocolateClassClusterModel extends ClassClusterModel {
         return "chocolate";
     }
 
-    static JSONKeyPathsByPropertyKey(): KeyPaths<ChocolateClassClusterModel> {
+    static JSONKeyPaths(): KeyPaths<ChocolateClassClusterModel> {
         return {
-            ...super.JSONKeyPathsByPropertyKey(),
+            ...super.JSONKeyPaths(),
             "bitterness": "chocolate_bitterness",
         };
     }
 
     static bitternessJSONTransformer(): ValueTransformer {
-        return ValueTransformer.usingForwardAndReversibleBlocks(
+        return ValueTransformer.forwardAndReversible(
             (value: string) => {
                 return parseInt(value);
             },
@@ -252,19 +252,19 @@ export class StrawberryClassClusterModel extends ClassClusterModel {
         return "strawberry";
     }
 
-    static JSONKeyPathsByPropertyKey(): KeyPaths<StrawberryClassClusterModel> {
+    static JSONKeyPaths(): KeyPaths<StrawberryClassClusterModel> {
         return {
-            ...super.JSONKeyPathsByPropertyKey(),
+            ...super.JSONKeyPaths(),
             "freshness": "strawberry_freshness",
         };
     }
 }
 
-export class RecursiveUserModel extends JSONSerializable {
+export class RecursiveUserModel extends Serializable {
     name: string;
     groups: RecursiveGroupModel[];
 
-    static JSONKeyPathsByPropertyKey() {
+    static JSONKeyPaths() {
         return {
             "name": "name_",
             "groups": "groups_",
@@ -276,11 +276,11 @@ export class RecursiveUserModel extends JSONSerializable {
     }
 }
 
-export class RecursiveGroupModel extends JSONSerializable {
+export class RecursiveGroupModel extends Serializable {
     owner: RecursiveUserModel;
     users: RecursiveUserModel[];
 
-    static JSONKeyPathsByPropertyKey(): KeyPaths<RecursiveGroupModel> {
+    static JSONKeyPaths(): KeyPaths<RecursiveGroupModel> {
         return {
             "owner": "owner_",
             "users": "users_",
@@ -296,10 +296,10 @@ export class RecursiveGroupModel extends JSONSerializable {
     }
 }
 
-export class HostedURLsModel extends JSONSerializable {
+export class HostedURLsModel extends Serializable {
     urls: URLModel[];
 
-    static JSONKeyPathsByPropertyKey(): KeyPaths<HostedURLsModel> {
+    static JSONKeyPaths(): KeyPaths<HostedURLsModel> {
         return {
             "urls": "urls",
         };
@@ -310,7 +310,7 @@ export class HostedURLsModel extends JSONSerializable {
     }
 }
 
-export class DefaultValuesModel extends JSONSerializable {
+export class DefaultValuesModel extends Serializable {
     name: string;
 
     /**
@@ -324,18 +324,18 @@ export class DefaultValuesModel extends JSONSerializable {
         this.foo = "foo";
     }
 
-    static JSONKeyPathsByPropertyKey(): KeyPaths<DefaultValuesModel> {
+    static JSONKeyPaths(): KeyPaths<DefaultValuesModel> {
         return {
             name: "name",
         };
     }
 }
 
-export class InvalidTransformersModel extends JSONSerializable {
+export class InvalidTransformersModel extends Serializable {
     foo: string;
     bar: string;
 
-    static JSONKeyPathsByPropertyKey(): KeyPaths<InvalidTransformersModel> {
+    static JSONKeyPaths(): KeyPaths<InvalidTransformersModel> {
         return {
             foo: "foo",
             bar: "bar",

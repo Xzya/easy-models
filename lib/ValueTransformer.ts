@@ -2,10 +2,6 @@ import isEqual = require("lodash.isequal");
 import { CreateError } from "./utils";
 import { MantleErrorTypes } from "./constants";
 
-type AnyMap = {
-    [key: string]: any;
-};
-
 /**
  * A function that represents a transformation.
  * 
@@ -63,7 +59,7 @@ export class ValueTransformer {
      * Returns an inverted transformer.
      */
     invertedTransformer(): ValueTransformer {
-        return ValueTransformer.usingForwardAndReversibleBlocks(
+        return ValueTransformer.forwardAndReversible(
             (value) => {
                 return this.reverseTransformedValue(value);
             },
@@ -79,7 +75,7 @@ export class ValueTransformer {
      * 
      * @param transformation 
      */
-    static usingForwardBlock(transformation: ValueTransformerFunction) {
+    static forward(transformation: ValueTransformerFunction) {
         return new ValueTransformer(transformation);
     }
 
@@ -88,7 +84,7 @@ export class ValueTransformer {
      * 
      * @param transformation 
      */
-    static usingReversibleBlock(transformation: ValueTransformerFunction) {
+    static reversible(transformation: ValueTransformerFunction) {
         return new ValueTransformer(transformation, transformation);
     }
 
@@ -98,7 +94,7 @@ export class ValueTransformer {
      * @param forward 
      * @param reverse 
      */
-    static usingForwardAndReversibleBlocks(forward: ValueTransformerFunction, reverse: ValueTransformerFunction) {
+    static forwardAndReversible(forward: ValueTransformerFunction, reverse: ValueTransformerFunction) {
         return new ValueTransformer(forward, reverse);
     }
 
@@ -111,8 +107,8 @@ export class ValueTransformer {
      * @param reverseDefaultValue The result to fall back to, in case no value matching the input value was found
      * during a reverse transformation.
      */
-    static valueMappingTransformer(object: AnyMap, defaultValue?: any, reverseDefaultValue?: any) {
-        return ValueTransformer.usingForwardAndReversibleBlocks(
+    static valueMappingTransformer(object: { [key: string]: any }, defaultValue?: any, reverseDefaultValue?: any) {
+        return ValueTransformer.forwardAndReversible(
             (key) => {
                 const value = object[key];
 
@@ -142,7 +138,7 @@ export class ValueTransformer {
      * @param options An object that contains one or more properties that specify comparison options.
      */
     static numberTransformer(locales?: string | string[], options?: Intl.NumberFormatOptions) {
-        return ValueTransformer.usingForwardAndReversibleBlocks(
+        return ValueTransformer.forwardAndReversible(
             (value: string) => {
                 if (value == null) return null;
 

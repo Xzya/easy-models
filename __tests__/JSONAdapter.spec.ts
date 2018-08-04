@@ -1,4 +1,4 @@
-import { JSONAdapter, JSONSerializable } from "../lib";
+import { JSONAdapter, Serializable } from "../lib";
 import { TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel, RecursiveGroupModel, URLSubclassModel, URL, HostedURLsModel, DefaultValuesModel, ClassClusterModel, InvalidTransformersModel } from "./TestModel";
 import { MantleErrorTypes } from "../lib/constants";
 
@@ -554,7 +554,7 @@ describe("serialize array of objects from models", () => {
         let error: Error | undefined;
 
         try {
-            objects = JSONAdapter.arrayFromModels({} as JSONSerializable[]);
+            objects = JSONAdapter.arrayFromModels({} as Serializable[]);
         } catch (err) {
             error = err;
         }

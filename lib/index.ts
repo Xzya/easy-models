@@ -1,5 +1,4 @@
 export * from "./JSONAdapter";
-export * from "./JSONSerializable";
+export * from "./Serializable";
 export * from "./ValueTransformer";
-export * from "./utils";
 export * from "./constants";

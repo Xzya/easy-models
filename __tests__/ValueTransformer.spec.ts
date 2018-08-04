@@ -3,7 +3,7 @@ import { MantleErrorTypes } from "../lib/constants";
 
 describe("ValueTransformer", () => {
     it("should return a forward transformer with a block", () => {
-        const transformer = ValueTransformer.usingForwardBlock((value: string) => {
+        const transformer = ValueTransformer.forward((value: string) => {
             return value + "bar";
         });
 
@@ -15,7 +15,7 @@ describe("ValueTransformer", () => {
     });
 
     it("should return a reversible transformer with a block", () => {
-        const transformer = ValueTransformer.usingReversibleBlock((value: string) => {
+        const transformer = ValueTransformer.reversible((value: string) => {
             return value + "bar";
         });
 
@@ -27,7 +27,7 @@ describe("ValueTransformer", () => {
     });
 
     it("should return a reversible transformer with forward and reverse blocks", () => {
-        const transformer = ValueTransformer.usingForwardAndReversibleBlocks(
+        const transformer = ValueTransformer.forwardAndReversible(
             (value: string) => {
                 return value + "bar";
             },
@@ -44,7 +44,7 @@ describe("ValueTransformer", () => {
     });
 
     it("should return undefined with null transformers blocks", () => {
-        const transformer = ValueTransformer.usingForwardAndReversibleBlocks(null, null);
+        const transformer = ValueTransformer.forwardAndReversible(null, null);
 
         expect(transformer).toBeDefined();
         expect(transformer.allowsReverseTransformation()).toBeFalsy();

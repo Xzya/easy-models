@@ -1,9 +1,5 @@
 import { ValueTransformer } from "./ValueTransformer";
 
-export type JSONKeyPathsByPropertyKey = {
-    [key: string]: string | string[];
-};
-
 export type KeyPaths<T> = {
     [K in keyof T]?: string | string[];
 };
@@ -15,7 +11,7 @@ export type Newable<T> = { new(...args: any[]): T; };
  * 
  * It is intended for scenarios where inheriting from Model is not feasible.
  */
-export interface JSONSerializable {
+export interface Serializable {
     /**
      * Specifies how to map property keys to different key paths in JSON.
      * 
@@ -26,7 +22,7 @@ export interface JSONSerializable {
      * 
      * Examples
      * 
-     * JSONKeyPathsByPropertyKey() {
+     * JSONKeyPaths() {
      *     return {
      *         "name": "POI.name",
      *         "point": ["latitude", "longitude"],
@@ -34,7 +30,7 @@ export interface JSONSerializable {
      *     };
      * }
      */
-    JSONKeyPathsByPropertyKey(): JSONKeyPathsByPropertyKey;
+    JSONKeyPaths(): { [key: string]: string | string[] };
 
     /**
      * Specifies how to convert a JSON value to the given property key. If reversible, the transformer will also be used
@@ -61,8 +57,8 @@ export interface JSONSerializable {
     classForParsingObject?(json: any): ModelClass;
 }
 
-export class JSONSerializable {
+export class Serializable {
 
 }
 
-export type ModelClass = JSONSerializable & Newable<JSONSerializable>;
+export type ModelClass = Serializable & Newable<Serializable>;

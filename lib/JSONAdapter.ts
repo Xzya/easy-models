@@ -1,6 +1,6 @@
 import get = require("lodash.get");
 import set = require("lodash.set");
-import { JSONSerializable, ModelClass } from "./JSONSerializable";
+import { Serializable, ModelClass } from "./Serializable";
 import { ValueTransformer } from "./ValueTransformer";
 import { CreateError } from "./utils";
 import { MantleErrorTypes } from "./constants";
@@ -19,10 +19,10 @@ export class JSONAdapter {
      * 
      * @param model The model from which to parse the JSON.
      */
-    private static valueTransformersForModel(model: JSONSerializable) {
+    private static valueTransformersForModel(model: Serializable) {
         let result: ValueTransformerMap = {};
 
-        const jsonKeyPaths = model.JSONKeyPathsByPropertyKey();
+        const jsonKeyPaths = model.JSONKeyPaths();
 
         // iterate over all key paths
         for (const key of Object.keys(jsonKeyPaths)) {
@@ -65,7 +65,7 @@ export class JSONAdapter {
      * @param jsonString A JSON string.
      * @param Class The model to use for JSON serialization.
      */
-    static modelFromJSON<T extends JSONSerializable>(jsonString: string, Class: ModelClass): T | null {
+    static modelFromJSON<T extends Serializable>(jsonString: string, Class: ModelClass): T | null {
         return JSONAdapter.modelFromObject(JSON.parse(jsonString), Class);
     }
 
@@ -75,7 +75,7 @@ export class JSONAdapter {
      * @param json An object.
      * @param Class The model to use for JSON serialization
      */
-    static modelFromObject<T extends JSONSerializable>(json: any, Class: ModelClass): T | null {
+    static modelFromObject<T extends Serializable>(json: any, Class: ModelClass): T | null {
         if (json == null) return null;
 
         // if the class implements classForParsingObject
@@ -95,7 +95,7 @@ export class JSONAdapter {
 
         const model: T = new Class.prototype.constructor();
 
-        const jsonKeyPaths = Class.JSONKeyPathsByPropertyKey();
+        const jsonKeyPaths = Class.JSONKeyPaths();
         const transformers = JSONAdapter.valueTransformersForModel(Class);
 
         // iterate over all key paths
@@ -140,7 +140,7 @@ export class JSONAdapter {
      * @param jsonString 
      * @param Class 
      */
-    static modelsFromJSONArray<T extends JSONSerializable>(jsonString: string, Class: ModelClass): T[] | null {
+    static modelsFromJSONArray<T extends Serializable>(jsonString: string, Class: ModelClass): T[] | null {
         return JSONAdapter.modelsFromArray(JSON.parse(jsonString), Class);
     }
 
@@ -150,7 +150,7 @@ export class JSONAdapter {
      * @param json 
      * @param Class 
      */
-    static modelsFromArray<T extends JSONSerializable>(json: any[], Class: ModelClass): T[] | null {
+    static modelsFromArray<T extends Serializable>(json: any[], Class: ModelClass): T[] | null {
         // make sure we have a value
         if (json == null) return null;
 
@@ -177,14 +177,14 @@ export class JSONAdapter {
      * 
      * @param model The model to use for JSON serialization.
      */
-    static objectFromModel(model: JSONSerializable): any {
+    static objectFromModel(model: Serializable): any {
         let result: any = {};
 
         // get the class of the model
         const Class = model.constructor as ModelClass;
 
         // get the key paths and transformers
-        const jsonKeyPaths = Class.JSONKeyPathsByPropertyKey();
+        const jsonKeyPaths = Class.JSONKeyPaths();
         const transformers = JSONAdapter.valueTransformersForModel(Class);
 
         for (const key of Object.keys(jsonKeyPaths)) {
@@ -223,7 +223,7 @@ export class JSONAdapter {
      * 
      * @param models An array of models to use for JSON serialization.
      */
-    static JSONArrayFromModels<T extends JSONSerializable>(models: T[]): string | null {
+    static JSONArrayFromModels<T extends Serializable>(models: T[]): string | null {
         return JSON.stringify(JSONAdapter.arrayFromModels(models));
     }
 
@@ -232,7 +232,7 @@ export class JSONAdapter {
      * 
      * @param models An array of models to use for JSON serialization.
      */
-    static arrayFromModels<T extends JSONSerializable>(models: T[]): any[] | null {
+    static arrayFromModels<T extends Serializable>(models: T[]): any[] | null {
         // make sure we have a value
         if (models == null) return null;
 
@@ -261,7 +261,7 @@ export class JSONAdapter {
      * @param Class The Model subclass to attempt to parse from the JSON.
      */
     static dictionaryTransformerWithModelClass(Class: ModelClass): ValueTransformer {
-        return ValueTransformer.usingForwardAndReversibleBlocks(
+        return ValueTransformer.forwardAndReversible(
             (value?: any) => {
                 if (value == null) return null;
 
@@ -272,7 +272,7 @@ export class JSONAdapter {
 
                 return JSONAdapter.modelFromObject(value, Class);
             },
-            (value?: JSONSerializable) => {
+            (value?: Serializable) => {
                 if (value == null) return null;
 
                 return JSONAdapter.objectFromModel(value);
@@ -287,7 +287,7 @@ export class JSONAdapter {
      * @param Class The Model subclass to attempt to parse from each JSON object.
      */
     static arrayTransformerWithModelClass(Class: ModelClass): ValueTransformer {
-        return ValueTransformer.usingForwardAndReversibleBlocks((value) => {
+        return ValueTransformer.forwardAndReversible((value) => {
             // make sure we have a value
             if (value == null) return null;
 
