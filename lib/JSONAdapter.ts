@@ -63,24 +63,24 @@ export class JSONAdapter {
      * Deserializes a model from a JSON string.
      * 
      * @param jsonString A JSON string.
-     * @param modelClass The model to use for JSON serialization.
+     * @param Class The model to use for JSON serialization.
      */
-    static modelFromJSON<T extends JSONSerializable>(jsonString: string, modelClass: ModelClass): T | null {
-        return JSONAdapter.modelFromObject(JSON.parse(jsonString), modelClass);
+    static modelFromJSON<T extends JSONSerializable>(jsonString: string, Class: ModelClass): T | null {
+        return JSONAdapter.modelFromObject(JSON.parse(jsonString), Class);
     }
 
     /**
      * Deserializes a model from an object.
      * 
      * @param json An object.
-     * @param modelClass The model to use for JSON serialization
+     * @param Class The model to use for JSON serialization
      */
-    static modelFromObject<T extends JSONSerializable>(json: any, modelClass: ModelClass): T | null {
+    static modelFromObject<T extends JSONSerializable>(json: any, Class: ModelClass): T | null {
         if (json == null) return null;
 
         // if the class implements classForParsingObject
-        if (modelClass.classForParsingObject) {
-            const classToUse = modelClass.classForParsingObject(json);
+        if (Class.classForParsingObject) {
+            const classToUse = Class.classForParsingObject(json);
 
             // if the implementation didn't return any class
             if (!classToUse) {
@@ -88,15 +88,15 @@ export class JSONAdapter {
             }
 
             // if the class is different than the one given as a parameter
-            if (classToUse != modelClass) {
+            if (classToUse != Class) {
                 return JSONAdapter.modelFromObject(json, classToUse);
             }
         }
 
-        const model: T = Object.create(modelClass.prototype);
+        const model: T = new Class.prototype.constructor();
 
-        const jsonKeyPaths = modelClass.JSONKeyPathsByPropertyKey();
-        const transformers = JSONAdapter.valueTransformersForModel(modelClass);
+        const jsonKeyPaths = Class.JSONKeyPathsByPropertyKey();
+        const transformers = JSONAdapter.valueTransformersForModel(Class);
 
         // iterate over all key paths
         for (const key of Object.keys(jsonKeyPaths)) {
@@ -138,31 +138,31 @@ export class JSONAdapter {
      * Attempts to parse a JSON string into model objects of a specific class.
      * 
      * @param jsonString 
-     * @param modelClass 
+     * @param Class 
      */
-    static modelsFromJSONArray<T extends JSONSerializable>(jsonString: string, modelClass: ModelClass): T[] | null {
-        return JSONAdapter.modelsFromArray(JSON.parse(jsonString), modelClass);
+    static modelsFromJSONArray<T extends JSONSerializable>(jsonString: string, Class: ModelClass): T[] | null {
+        return JSONAdapter.modelsFromArray(JSON.parse(jsonString), Class);
     }
 
     /**
      * Attempts to parse an array of objects into model objects of a specific class.
      * 
      * @param json 
-     * @param modelClass 
+     * @param Class 
      */
-    static modelsFromArray<T extends JSONSerializable>(json: any[], modelClass: ModelClass): T[] | null {
+    static modelsFromArray<T extends JSONSerializable>(json: any[], Class: ModelClass): T[] | null {
         // make sure we have a value
         if (json == null) return null;
 
         // make sure the value is an array
         if (!Array.isArray(json)) {
-            throw CreateError(`${modelClass} could not be created because an invalid object array was provided: ${json}.`, MantleErrorTypes.JSONAdapterInvalidJSON);
+            throw CreateError(`${Class} could not be created because an invalid object array was provided: ${json}.`, MantleErrorTypes.JSONAdapterInvalidJSON);
         }
 
         const models: T[] = [];
 
         for (const object of json) {
-            const model = JSONAdapter.modelFromObject<T>(object, modelClass);
+            const model = JSONAdapter.modelFromObject<T>(object, Class);
 
             if (!model) return null;
 
@@ -181,11 +181,11 @@ export class JSONAdapter {
         let result: any = {};
 
         // get the class of the model
-        const modelClass = model.constructor as ModelClass;
+        const Class = model.constructor as ModelClass;
 
         // get the key paths and transformers
-        const jsonKeyPaths = modelClass.JSONKeyPathsByPropertyKey();
-        const transformers = JSONAdapter.valueTransformersForModel(modelClass);
+        const jsonKeyPaths = Class.JSONKeyPathsByPropertyKey();
+        const transformers = JSONAdapter.valueTransformersForModel(Class);
 
         for (const key of Object.keys(jsonKeyPaths)) {
             const keyPath = jsonKeyPaths[key];
@@ -251,9 +251,9 @@ export class JSONAdapter {
     /**
      * Creates a reversible transformer to convert an object into a Model object, and vice-versa.
      * 
-     * @param modelClass The Model subclass to attempt to parse from the JSON.
+     * @param Class The Model subclass to attempt to parse from the JSON.
      */
-    static dictionaryTransformerWithModelClass(modelClass: ModelClass): ValueTransformer {
+    static dictionaryTransformerWithModelClass(Class: ModelClass): ValueTransformer {
         return ValueTransformer.usingForwardAndReversibleBlocks((value) => {
             if (value == null) return null;
 
@@ -262,7 +262,7 @@ export class JSONAdapter {
                 throw CreateError(`Could not convert JSON object to model object. Expected an object, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
             }
 
-            return JSONAdapter.modelFromObject(value, modelClass);
+            return JSONAdapter.modelFromObject(value, Class);
         }, (value) => {
             if (value == null) return null;
 
@@ -274,9 +274,9 @@ export class JSONAdapter {
      * Creates a reversible transformer to convert an array of objects into an array of Model
      * objects, and vice-versa.
      * 
-     * @param modelClass The Model subclass to attempt to parse from each JSON object.
+     * @param Class The Model subclass to attempt to parse from each JSON object.
      */
-    static arrayTransformerWithModelClass(modelClass: ModelClass): ValueTransformer {
+    static arrayTransformerWithModelClass(Class: ModelClass): ValueTransformer {
         return ValueTransformer.usingForwardAndReversibleBlocks((value) => {
             // make sure we have a value
             if (value == null) return null;
@@ -301,7 +301,7 @@ export class JSONAdapter {
                 }
 
                 // convert the model
-                const model = JSONAdapter.modelFromObject(object, modelClass);
+                const model = JSONAdapter.modelFromObject(object, Class);
 
                 if (!model) continue;
 

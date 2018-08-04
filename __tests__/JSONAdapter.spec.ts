@@ -1,5 +1,5 @@
 import { JSONAdapter } from "../lib";
-import { TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel, RecursiveGroupModel, URLSubclassModel, URL } from "./TestModel";
+import { TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel, RecursiveGroupModel, URLSubclassModel, URL, HostedURLsModel, DefaultValuesModel } from "./TestModel";
 import { MantleErrorTypes } from "../lib/constants";
 
 describe("JSONAdapter", () => {
@@ -220,6 +220,28 @@ describe("JSONAdapter", () => {
 
         expect(model.url).toEqual(new URL("http://github.com/1"));
         expect(model.otherUrl).toEqual(new URL("http://github.com/2"));
+
+        expect(JSONAdapter.objectFromModel(model)).toEqual(values);
+    });
+
+    it("should initialize default values", () => {
+        const values = {
+            "name": "John"
+        };
+
+        let model: DefaultValuesModel;
+        let error: Error | undefined;
+
+        try {
+            model = JSONAdapter.modelFromObject<DefaultValuesModel>(values, DefaultValuesModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).toBeUndefined();
+        expect(model).toBeDefined();
+        expect(model.name).toEqual("John");
+        expect(model.foo).toEqual("foo");
     });
 
     it("should fail to serialize if a JSON transformer errors", () => {
@@ -607,6 +629,101 @@ describe("recursive models", () => {
         }
 
         expect(model).not.toBeDefined();
+        expect(error).toBeDefined();
+        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+    });
+
+    it("should throw error if array item is not an object", () => {
+        const values = {
+            "urls": [
+                "foo"
+            ]
+        };
+
+        let model: HostedURLsModel;
+        let error: Error | undefined;
+
+        try {
+            model = JSONAdapter.modelFromObject<HostedURLsModel>(values, HostedURLsModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(model).not.toBeDefined();
+        expect(error).toBeDefined();
+        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+    });
+
+    it("should add null values to parsed array", () => {
+        const values = {
+            "urls": [
+                {
+                    "url": "http://foo.com"
+                },
+                null,
+                {
+                    "url": "http://bar.com"
+                },
+            ]
+        };
+
+        let model: HostedURLsModel;
+        let error: Error | undefined;
+
+        try {
+            model = JSONAdapter.modelFromObject<HostedURLsModel>(values, HostedURLsModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).not.toBeDefined();
+        expect(model).toBeDefined();
+        expect(model.urls.length).toEqual(3);
+        expect(model.urls[0].url).toEqual(new URL("http://foo.com"));
+        expect(model.urls[1]).toBeNull();
+        expect(model.urls[2].url).toEqual(new URL("http://bar.com"));
+
+        expect(JSONAdapter.objectFromModel(model)).toEqual(values);
+    });
+
+    it("should throw error when deserializing a non-array", () => {
+        const model = new HostedURLsModel();
+        model.urls = {} as URLModel[];
+
+        let values: any;
+        let error: Error | undefined;
+
+        try {
+            values = JSONAdapter.objectFromModel(model);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(values).toBeUndefined();
+        expect(error).toBeDefined();
+        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+    });
+
+    it("should throw error when deserializing a non-object inside array", () => {
+        const url = new URLModel();
+        url.url = new URL("http://foo.com");
+
+        const model = new HostedURLsModel();
+        model.urls = [
+            url,
+            "foo",
+        ] as URLModel[];
+
+        let values: any;
+        let error: Error | undefined;
+
+        try {
+            values = JSONAdapter.objectFromModel(model);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(values).toBeUndefined();
         expect(error).toBeDefined();
         expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
     });

@@ -138,7 +138,7 @@ export class URLModel extends JSONSerializable {
             },
             (value: URL) => {
                 if (value instanceof URL) {
-                    return value.toString();
+                    return value.url;
                 }
                 throw new Error("Invalid URL");
             }
@@ -291,5 +291,40 @@ export class RecursiveGroupModel extends JSONSerializable {
 
     static usersJSONTransformer(): ValueTransformer {
         return JSONAdapter.arrayTransformerWithModelClass(RecursiveUserModel);
+    }
+}
+
+export class HostedURLsModel extends JSONSerializable {
+    urls: URLModel[];
+
+    static JSONKeyPathsByPropertyKey(): KeyPaths<HostedURLsModel> {
+        return {
+            "urls": "urls",
+        };
+    }
+
+    static urlsJSONTransformer(): ValueTransformer {
+        return JSONAdapter.arrayTransformerWithModelClass(URLModel);
+    }
+}
+
+export class DefaultValuesModel extends JSONSerializable {
+    name: string;
+
+    /**
+     * Defaults to foo
+     */
+    foo: string;
+
+    constructor() {
+        super();
+
+        this.foo = "foo";
+    }
+
+    static JSONKeyPathsByPropertyKey(): KeyPaths<DefaultValuesModel> {
+        return {
+            name: "name",
+        };
     }
 }
