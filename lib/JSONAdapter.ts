@@ -140,7 +140,7 @@ export class JSONAdapter {
      * @param jsonString 
      * @param modelClass 
      */
-    static modelsFromJSONArray<T extends JSONSerializable>(jsonString: string, modelClass: ModelClass): T[] | undefined {
+    static modelsFromJSONArray<T extends JSONSerializable>(jsonString: string, modelClass: ModelClass): T[] | null {
         return JSONAdapter.modelsFromArray(JSON.parse(jsonString), modelClass);
     }
 
@@ -150,15 +150,21 @@ export class JSONAdapter {
      * @param json 
      * @param modelClass 
      */
-    static modelsFromArray<T extends JSONSerializable>(json: any[], modelClass: ModelClass): T[] | undefined {
-        if (json == null) return undefined;
+    static modelsFromArray<T extends JSONSerializable>(json: any[], modelClass: ModelClass): T[] | null {
+        // make sure we have a value
+        if (json == null) return null;
+
+        // make sure the value is an array
+        if (!Array.isArray(json)) {
+            throw CreateError(`${modelClass} could not be created because an invalid object array was provided: ${json}.`, MantleErrorTypes.JSONAdapterInvalidJSON);
+        }
 
         const models: T[] = [];
 
         for (let object of json) {
             const model = JSONAdapter.modelFromObject<T>(object, modelClass);
 
-            if (!model) return undefined;
+            if (!model) return null;
 
             models.push(model);
         }
@@ -217,7 +223,7 @@ export class JSONAdapter {
      * 
      * @param models An array of models to use for JSON serialization.
      */
-    static JSONArrayFromModels<T extends JSONSerializable>(models: T[]): string | undefined {
+    static JSONArrayFromModels<T extends JSONSerializable>(models: T[]): string | null {
         return JSON.stringify(JSONAdapter.arrayFromModels(models));
     }
 
@@ -226,15 +232,15 @@ export class JSONAdapter {
      * 
      * @param models An array of models to use for JSON serialization.
      */
-    static arrayFromModels<T extends JSONSerializable>(models: T[]): any[] | undefined {
-        if (models == null) return undefined;
+    static arrayFromModels<T extends JSONSerializable>(models: T[]): any[] | null {
+        if (models == null) return null;
 
         const objectArray: any[] = [];
 
         for (let model of models) {
             const object = JSONAdapter.objectFromModel(model);
 
-            if (!object) return undefined;
+            if (!object) return null;
 
             objectArray.push(object);
         }
@@ -273,7 +279,7 @@ export class JSONAdapter {
     static arrayTransformerWithModelClass(modelClass: ModelClass): ValueTransformer {
         return ValueTransformer.usingForwardAndReversibleBlocks((value) => {
             // make sure we have a value
-            if (value == null) return undefined;
+            if (value == null) return null;
 
             // make sure the value is an array
             if (!Array.isArray(value)) {
@@ -305,7 +311,7 @@ export class JSONAdapter {
             return models;
 
         }, (value) => {
-            if (value == null) return undefined;
+            if (value == null) return null;
 
             // make sure the value is an array
             if (!Array.isArray(value)) {

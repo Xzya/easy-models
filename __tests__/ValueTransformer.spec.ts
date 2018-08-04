@@ -153,3 +153,37 @@ describe("number transformer", () => {
         expect(transformer.transformedValue("foo")).toEqual(null);
     });
 });
+
+describe("invert transformer", () => {
+    class TestTransformer extends ValueTransformer {
+        allowsReverseTransformation() {
+            return true;
+        }
+        transformedValue() {
+            return "forward";
+        }
+        reverseTransformedValue() {
+            return "reverse";
+        }
+    }
+
+    let transformer: ValueTransformer;
+
+    beforeEach(() => {
+        transformer = new TestTransformer();
+    });
+
+    it("should invert a transformer", () => {
+        const inverted = transformer.invertedTransformer();
+
+        expect(inverted.transformedValue()).toEqual("reverse");
+        expect(inverted.reverseTransformedValue()).toEqual("forward");
+    });
+
+    it("should invert an inverted transformer", () => {
+        const inverted = transformer.invertedTransformer().invertedTransformer();
+
+        expect(inverted.transformedValue()).toEqual("forward");
+        expect(inverted.reverseTransformedValue()).toEqual("reverse");
+    });
+});

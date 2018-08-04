@@ -380,6 +380,35 @@ describe("Deserializing multiple models", () => {
         expect(models[0].name).toEqual("foo");
         expect(models[1].name).toEqual("bar");
     });
+
+    it("should return null on null input", () => {
+        let models: TestModel[];
+        let error: Error | undefined;
+
+        try {
+            models = JSONAdapter.modelsFromArray<TestModel>(null, TestModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).not.toBeDefined();
+        expect(models).toBeNull();
+    });
+
+    it("should return error on non-array input", () => {
+        let models: TestModel[];
+        let error: Error | undefined;
+
+        try {
+            models = JSONAdapter.modelsFromArray<TestModel>({} as any[], TestModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(models).not.toBeDefined();
+        expect(error).toBeDefined();
+        expect(error.name).toEqual(MantleErrorTypes.JSONAdapterInvalidJSON);
+    });
 });
 
 it("should return undefined and an error if it fails to initialize any model from an array", () => {
@@ -454,8 +483,10 @@ it("should support recursive models", () => {
             "groups_": [
                 {
                     "owner_": {
-                        "name_": "Jane"
-                    }
+                        "name_": "Jane",
+                        "groups_": null
+                    },
+                    "users_": null
                 }
             ]
         },
@@ -469,16 +500,20 @@ it("should support recursive models", () => {
                             "groups_": [
                                 {
                                     "owner_": {
-                                        "name_": "X"
-                                    }
+                                        "name_": "X",
+                                        "groups_": null
+                                    },
+                                    "users_": null
                                 }
                             ]
-                        }
+                        },
+                        "users_": null
                     }
                 ]
             },
             {
-                "name_": "John"
+                "name_": "John",
+                "groups_": null
             }
         ]
     };

@@ -20,7 +20,7 @@ export class ValueTransformer {
     protected forward?: ValueTransformerFunction;
     protected reverse?: ValueTransformerFunction;
 
-    private constructor(forward?: ValueTransformerFunction, reverse?: ValueTransformerFunction) {
+    constructor(forward?: ValueTransformerFunction, reverse?: ValueTransformerFunction) {
         this.forward = forward;
         this.reverse = reverse;
     }
@@ -30,7 +30,7 @@ export class ValueTransformer {
      * 
      * @param value The value to be transformed.
      */
-    transformedValue(value: any) {
+    transformedValue(value?: any) {
         if (this.forward) {
             return this.forward(value);
         }
@@ -42,7 +42,7 @@ export class ValueTransformer {
      * 
      * @param value The value to be reversed.
      */
-    reverseTransformedValue(value: any) {
+    reverseTransformedValue(value?: any) {
         if (this.reverse) {
             return this.reverse(value);
         }
@@ -54,6 +54,23 @@ export class ValueTransformer {
      */
     allowsReverseTransformation(): boolean {
         return this.reverse != null;
+    }
+
+    /**
+     * Flips the direction of the receiver's transformation, such that `transformedValue` will
+     * become `reverseTransformedValue`, and vice-versa.
+     * 
+     * Returns an inverted transformer.
+     */
+    invertedTransformer(): ValueTransformer {
+        return ValueTransformer.usingForwardAndReversibleBlocks(
+            (value) => {
+                return this.reverseTransformedValue(value);
+            },
+            (value) => {
+                return this.transformedValue(value);
+            }
+        )
     }
 
     /**
