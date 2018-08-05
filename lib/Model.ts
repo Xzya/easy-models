@@ -1,5 +1,5 @@
 import { Serializable, Newable } from "./Serializable";
-import { ModelFromObject, ModelFromJSON, ObjectFromModel, ModelsFromArray, ModelsFromJSONArray } from "./JSONAdapter";
+import { ModelFromObject, ModelFromJSON, ObjectFromModel, ModelsFromArray, ModelsFromJSONArray, ArrayFromModels } from "./JSONAdapter";
 
 export class Model extends Serializable {
     constructor() {
@@ -66,12 +66,59 @@ export class Model extends Serializable {
         return [null, error];
     }
 
-    toObject() {
-        return ObjectFromModel(this);
+    static toArray<T extends Serializable>(this: Newable<T>, models: T[]): [any[] | null, Error?] {
+        let objects: any[] | null;
+        let error: Error | undefined;
+
+        try {
+            objects = ArrayFromModels(models);
+
+            return [objects, error];
+        } catch (err) {
+            error = err;
+        }
+
+        return [null, error];
     }
 
-    toJSON() {
-        return JSON.stringify(this.toObject());
+    static toJSONArray<T extends Serializable>(this: Newable<T>, models: T[]): [string | null, Error?] {
+        let objects: any[] | null;
+        let error: Error | undefined;
+
+        try {
+            objects = ArrayFromModels(models);
+
+            return [JSON.stringify(objects), error];
+        } catch (err) {
+            error = err;
+        }
+
+        return [null, error];
+    }
+
+    toObject(): [any, Error?] {
+        let object: any;
+        let error: Error | undefined;
+
+        try {
+            object = ObjectFromModel(this);
+
+            return [object, error];
+        } catch (err) {
+            error = err;
+        }
+
+        return [null, error];
+    }
+
+    toJSON(): [string | null, Error?] {
+        const [object, error] = this.toObject();
+
+        if (error) {
+            return [null, error];
+        }
+
+        return [JSON.stringify(object), error];
     }
 
 }
