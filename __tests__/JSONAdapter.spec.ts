@@ -40,6 +40,13 @@ describe("JSONAdapter", () => {
 
             expect(model.toJSON()).toEqual(expected);
         });
+
+        it("should return error on invalid JSON input", () => {
+            const [model, error] = TestModel.fromJSON("{");
+
+            expect(model).toBeNull();
+            expect(error).toBeDefined();
+        });
     });
 
     it("should initialize nested key paths from JSON", () => {
@@ -309,6 +316,13 @@ describe("Deserializing multiple models", () => {
         expect(error).toBeDefined();
         expect(error.name).toEqual(MantleErrorTypes.JSONAdapterInvalidJSON);
     });
+
+    it("should return error on invalid JSON input", () => {
+        const [models, error] = TestModel.fromJSONArray("{");
+
+        expect(error).toBeDefined();
+        expect(models).toBeNull();
+    });
 });
 
 it("should return undefined and an error if it fails to initialize any model from an array", () => {
@@ -350,15 +364,6 @@ describe("serialize array of objects from models", () => {
 
     const model2 = new TestModel();
     model2.name = "bar";
-
-    it("should return a JSON array of objects from models", () => {
-        const [objects, error] = TestModel.toJSONArray([model1, model2]);
-
-        expect(error).toBeUndefined();
-        expect(objects).toBeDefined();
-
-        expect(objects).toEqual(`[{"username":"foo","count":"1","nested":{}},{"username":"bar","count":"1","nested":{}}]`);
-    });
 
     it("should return an array of objects from models", () => {
         const [objects, error] = TestModel.toArray([model1, model2]);

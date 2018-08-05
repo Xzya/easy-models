@@ -1,5 +1,5 @@
 import { Serializable, Newable } from "./Serializable";
-import { ModelFromObject, ModelFromJSON, ObjectFromModel, ModelsFromArray, ModelsFromJSONArray, ArrayFromModels, JSONArrayFromModels } from "./JSONAdapter";
+import { ModelFromObject, ModelFromJSON, ObjectFromModel, ModelsFromArray, ModelsFromJSONArray, ArrayFromModels } from "./JSONAdapter";
 
 export class Model extends Serializable {
     constructor() {
@@ -122,31 +122,6 @@ export class Model extends Serializable {
 
         try {
             objects = ArrayFromModels(models);
-
-            return [objects, error];
-        } catch (err) {
-            error = err;
-        }
-
-        return [null, error];
-    }
-
-    /**
-     * Converts an array of models into a JSON string.
-     * 
-     * Returns an array, with the first element being the serialized objects, and the second
-     * one being an error if any occured during the serialization.
-     * 
-     * If you prefer the try catch approach, check `JSONArrayFromModels`.
-     * 
-     * @param models An array of models to use for JSON serialization.
-     */
-    static toJSONArray<T extends Serializable>(this: Newable<T>, models: T[]): [string | null, Error?] {
-        let objects: string | null;
-        let error: Error | undefined;
-
-        try {
-            objects = JSONArrayFromModels(models);
 
             return [objects, error];
         } catch (err) {

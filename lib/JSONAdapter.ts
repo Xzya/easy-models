@@ -214,15 +214,6 @@ export function ObjectFromModel<T extends Serializable>(model: T): any {
 }
 
 /**
- * Converts an array of models into a JSON string.
- * 
- * @param models An array of models to use for JSON serialization.
- */
-export function JSONArrayFromModels<T extends Serializable>(models: T[]): string | null {
-    return JSON.stringify(ArrayFromModels(models));
-}
-
-/**
  * Converts an array of models into an object array.
  * 
  * @param models An array of models to use for JSON serialization.
