@@ -1,6 +1,6 @@
 {
   "name": "mantle-nodejs",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,6 +27,9 @@
   },
   "author": "Mihail Cristian Dumitru",
   "license": "MIT",
+  "repository": "github:Xzya/mantlejs",
+  "bugs": "https://github.com/Xzya/mantlejs/issues",
+  "homepage": "https://github.com/Xzya/mantlejs#readme",
   "dependencies": {
     "lodash.get": "^4.4.2",
     "lodash.isequal": "^4.5.0",
