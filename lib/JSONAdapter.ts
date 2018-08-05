@@ -132,8 +132,8 @@ export function ModelFromObject<T extends Serializable>(json: any, Class: Newabl
 /**
  * Attempts to parse a JSON string into model objects of a specific class.
  * 
- * @param jsonString 
- * @param Class 
+ * @param jsonString A JSON string.
+ * @param Class The model to use for JSON serialization.
  */
 export function ModelsFromJSONArray<T extends Serializable>(jsonString: string, Class: Newable<T>): T[] | null {
     return ModelsFromArray(JSON.parse(jsonString), Class);
@@ -142,8 +142,8 @@ export function ModelsFromJSONArray<T extends Serializable>(jsonString: string, 
 /**
  * Attempts to parse an array of objects into model objects of a specific class.
  * 
- * @param json 
- * @param Class 
+ * @param json An array of objects.
+ * @param Class The model to use for JSON serialization.
  */
 export function ModelsFromArray<T extends Serializable>(json: any[], Class: Newable<T>): T[] | null {
     // make sure we have a value

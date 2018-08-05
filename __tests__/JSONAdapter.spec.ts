@@ -1,4 +1,4 @@
-import { Serializable } from "../lib";
+import { Serializable, ObjectFromModel } from "../lib";
 import { TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel, RecursiveGroupModel, URLSubclassModel, URL, HostedURLsModel, DefaultValuesModel, ClassClusterModel, InvalidTransformersModel } from "./TestModel";
 import { MantleErrorTypes } from "../lib/constants";
 
@@ -26,8 +26,7 @@ describe("JSONAdapter", () => {
             expect(model.name).toBeNull();
             expect(model.count).toEqual(5);
 
-            expect(model.toObject()).toEqual([expected, undefined]);
-            expect(model.toJSON()).toEqual([`{"username":null,"count":"5","nested":{"name":null}}`, undefined]);
+            expect(model.toJSON()).toEqual(expected);
         });
 
         it("should initialize nested key paths from JSON", () => {
@@ -39,7 +38,7 @@ describe("JSONAdapter", () => {
             expect(model.name).toBeNull();
             expect(model.count).toEqual(5);
 
-            expect(model.toObject()).toEqual([expected, undefined]);
+            expect(model.toJSON()).toEqual(expected);
         });
     });
 
@@ -61,7 +60,7 @@ describe("JSONAdapter", () => {
         expect(model.count).toEqual(0);
         expect(model.nestedName).toEqual("bar");
 
-        expect(model.toObject()).toEqual([values, undefined]);
+        expect(model.toJSON()).toEqual(values);
     });
 
     it("it should initialize properties with multiple key paths from JSON", () => {
@@ -85,7 +84,7 @@ describe("JSONAdapter", () => {
         expect(model.nestedLocation.latitude).toEqual(12);
         expect(model.nestedLocation.longitude).toEqual(34);
 
-        expect(model.toObject()).toEqual([values, undefined]);
+        expect(model.toJSON()).toEqual(values);
     });
 
 
@@ -155,7 +154,7 @@ describe("JSONAdapter", () => {
         expect(model.url).toEqual(new URL("http://github.com/1"));
         expect(model.otherUrl).toEqual(new URL("http://github.com/2"));
 
-        expect(model.toObject()).toEqual([values, undefined]);
+        expect(model.toJSON()).toEqual(values);
     });
 
     it("should initialize default values", () => {
@@ -200,7 +199,7 @@ describe("JSONAdapter", () => {
         expect(model.count).toEqual(0);
         expect(model.nestedName).toEqual("bar");
 
-        expect(model.toObject()).toEqual([values, undefined]);
+        expect(model.toJSON()).toEqual(values);
     });
 
     it("should serialize different model classes", () => {
@@ -216,7 +215,7 @@ describe("JSONAdapter", () => {
         expect(chocolateModel.flavor).toEqual("chocolate");
         expect(chocolateModel.bitterness).toEqual(100);
 
-        expect(chocolateModel.toObject()).toEqual([chocolateValues, undefined]);
+        expect(chocolateModel.toJSON()).toEqual(chocolateValues);
 
         const strawberryValues = {
             "flavor": "strawberry",
@@ -230,7 +229,7 @@ describe("JSONAdapter", () => {
         expect(strawberryModel.flavor).toEqual("strawberry");
         expect(strawberryModel.freshness).toEqual(20);
 
-        expect(strawberryModel.toObject()).toEqual([strawberryValues, undefined]);
+        expect(strawberryModel.toJSON()).toEqual(strawberryValues);
     });
 
     it("should return an error when no suitable model class is found", () => {
@@ -459,7 +458,7 @@ describe("recursive models", () => {
         expect(model.users[0].groups[1].owner).toBeNull();
         expect(model.users[0].groups[1].users).toBeNull();
 
-        expect(model.toObject()).toEqual([values, undefined]);
+        expect(model.toJSON()).toEqual(values);
     });
 
     it("should throw error on non-object input", () => {
@@ -522,7 +521,7 @@ describe("recursive models", () => {
         expect(model.urls[1]).toBeNull();
         expect(model.urls[2].url).toEqual(new URL("http://bar.com"));
 
-        expect(model.toObject()).toEqual([values, undefined]);
+        expect(model.toJSON()).toEqual(values);
     });
 
     it("should throw error when deserializing a non-array", () => {
