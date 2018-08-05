@@ -109,7 +109,14 @@ describe("Example model using GitHub issues", () => {
             "updated_at": "2011-04-22T13:33:48.000Z",
         };
 
-        const [model, error] = GHIssue.from(values);
+        let model: GHIssue;
+        let error: Error;
+
+        try {
+            model = GHIssue.from(values);
+        } catch (err) {
+            error = err;
+        }
 
         expect(error).toBeUndefined();
         expect(model).toBeDefined();
