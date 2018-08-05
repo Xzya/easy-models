@@ -5,6 +5,78 @@
 
 MantleJS makes it easy to write a simple model layer for your JavaScript application. Inspired by [Mantle for iOS](https://github.com/Mantle/Mantle).
 
+## Model
+
+```typescript
+enum GHIssueState {
+    Open = 0,
+    Closed,
+}
+
+class GHIssue extends Model {
+    readonly url: string;
+    readonly htmlUrl: string;
+    readonly number: number;
+    readonly state: GHIssueState;
+    readonly reporterLogin: string;
+    readonly assignee: GHUser;
+    readonly assignees: GHUser[];
+    readonly updatedAt: Date;
+
+    title: string;
+    body: string;
+
+    retrievedAt: Date;
+
+    constructor() {
+        super();
+
+        this.retrievedAt = new Date();
+    }
+
+    static JSONKeyPaths(): KeyPaths<GHIssue> {
+        return {
+            url: "url",
+            htmlUrl: "html_url",
+            number: "number",
+            state: "state",
+            reporterLogin: "user.login",
+            assignee: "assignee",
+            assignees: "assignees",
+            updatedAt: "updated_at",
+            title: "title",
+            body: "body",
+        };
+    }
+
+    static updatedAtJSONTransformer(): ValueTransformer {
+        return ValueTransformer.forwardAndReversible(
+            (value: string) => {
+                return new Date(value);
+            },
+            (value: Date) => {
+                return value.toISOString();
+            }
+        );
+    }
+
+    static stateJSONTransformer(): ValueTransformer {
+        return ValueTransformer.valueMappingTransformer({
+            "open": GHIssueState.Open,
+            "closed": GHIssueState.Closed,
+        });
+    }
+
+    static assigneeJSONTransformer(): ValueTransformer {
+        return ValueTransformer.objectTransformer(GHUser);
+    }
+
+    static assigneesJSONTransformer(): ValueTransformer {
+        return ValueTransformer.arrayTransformer(GHUser);
+    }
+}
+```
+
 ## Serializable
 
 In order to serialize your model objects from or into JSON, you need to extend `Serializable` in your model class.

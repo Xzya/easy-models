@@ -41,7 +41,7 @@ describe("Example model using GitHub issues", () => {
             this.retrievedAt = new Date();
         }
 
-        static JSONKeyPaths() {
+        static JSONKeyPaths(): KeyPaths<GHIssue> {
             return {
                 url: "url",
                 htmlUrl: "html_url",
