@@ -38,7 +38,7 @@
     "@types/lodash.get": "^4.4.4",
     "@types/lodash.set": "^4.3.4",
     "@types/lodash.isequal": "^4.5.3",
-    "typescript": "^2.9.2",
+    "typescript": "^3.0.1",
     "gulp": "^4.0.0",
     "del": "^3.0.0",
     "jest": "^23.4.2",

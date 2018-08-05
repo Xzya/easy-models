@@ -1,4 +1,4 @@
-import { JSONAdapter, Serializable } from "../lib";
+import { Serializable, ModelFromJSON, ObjectFromModel, ModelFromObject, ModelsFromJSONArray, ModelsFromArray, JSONArrayFromModels, ArrayFromModels } from "../lib";
 import { TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel, RecursiveGroupModel, URLSubclassModel, URL, HostedURLsModel, DefaultValuesModel, ClassClusterModel, InvalidTransformersModel } from "./TestModel";
 import { MantleErrorTypes } from "../lib/constants";
 
@@ -22,7 +22,7 @@ describe("JSONAdapter", () => {
             let error: Error | undefined;
 
             try {
-                model = JSONAdapter.modelFromJSON<TestModel>(JSON.stringify(values), TestModel);
+                model = ModelFromJSON(JSON.stringify(values), TestModel);
             } catch (err) {
                 error = err;
             }
@@ -33,7 +33,7 @@ describe("JSONAdapter", () => {
             expect(model.name).toBeNull();
             expect(model.count).toEqual(5);
 
-            expect(JSONAdapter.objectFromModel(model)).toEqual(expected);
+            expect(ObjectFromModel(model)).toEqual(expected);
         });
 
         it("should initialize nested key paths from JSON", () => {
@@ -41,7 +41,7 @@ describe("JSONAdapter", () => {
             let error: Error | undefined;
 
             try {
-                model = JSONAdapter.modelFromObject<TestModel>(values, TestModel);
+                model = ModelFromObject(values, TestModel);
             } catch (err) {
                 error = err;
             }
@@ -52,7 +52,7 @@ describe("JSONAdapter", () => {
             expect(model.name).toBeNull();
             expect(model.count).toEqual(5);
 
-            expect(JSONAdapter.objectFromModel(model)).toEqual(expected);
+            expect(ObjectFromModel(model)).toEqual(expected);
         });
     });
 
@@ -69,7 +69,7 @@ describe("JSONAdapter", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<TestModel>(values, TestModel);
+            model = ModelFromObject(values, TestModel);
         } catch (err) {
             error = err;
         }
@@ -81,7 +81,7 @@ describe("JSONAdapter", () => {
         expect(model.count).toEqual(0);
         expect(model.nestedName).toEqual("bar");
 
-        expect(JSONAdapter.objectFromModel(model)).toEqual(values);
+        expect(ObjectFromModel(model)).toEqual(values);
     });
 
     it("it should initialize properties with multiple key paths from JSON", () => {
@@ -98,7 +98,7 @@ describe("JSONAdapter", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<MultiKeypathModel>(values, MultiKeypathModel);
+            model = ModelFromObject(values, MultiKeypathModel);
         } catch (err) {
             error = err;
         }
@@ -112,7 +112,7 @@ describe("JSONAdapter", () => {
         expect(model.nestedLocation.latitude).toEqual(12);
         expect(model.nestedLocation.longitude).toEqual(34);
 
-        expect(JSONAdapter.objectFromModel(model)).toEqual(values);
+        expect(ObjectFromModel(model)).toEqual(values);
     });
 
 
@@ -127,7 +127,7 @@ describe("JSONAdapter", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<TestModel>(values, TestModel);
+            model = ModelFromObject(values, TestModel);
         } catch (err) {
             error = err;
         }
@@ -157,7 +157,7 @@ describe("JSONAdapter", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<TestModel>(values, TestModel);
+            model = ModelFromObject(values, TestModel);
         } catch (err) {
             error = err;
         }
@@ -180,7 +180,7 @@ describe("JSONAdapter", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<URLModel>(values, URLModel);
+            model = ModelFromObject(values, URLModel);
         } catch (err) {
             error = err;
         }
@@ -199,7 +199,7 @@ describe("JSONAdapter", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<URLSubclassModel>(values, URLSubclassModel);
+            model = ModelFromObject(values, URLSubclassModel);
         } catch (err) {
             error = err;
         }
@@ -210,7 +210,7 @@ describe("JSONAdapter", () => {
         expect(model.url).toEqual(new URL("http://github.com/1"));
         expect(model.otherUrl).toEqual(new URL("http://github.com/2"));
 
-        expect(JSONAdapter.objectFromModel(model)).toEqual(values);
+        expect(ObjectFromModel(model)).toEqual(values);
     });
 
     it("should initialize default values", () => {
@@ -222,7 +222,7 @@ describe("JSONAdapter", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<DefaultValuesModel>(values, DefaultValuesModel);
+            model = ModelFromObject(values, DefaultValuesModel);
         } catch (err) {
             error = err;
         }
@@ -242,7 +242,7 @@ describe("JSONAdapter", () => {
         let error: Error | undefined;
 
         try {
-            object = JSONAdapter.objectFromModel(model);
+            object = ObjectFromModel(model);
         } catch (err) {
             error = err;
         }
@@ -264,7 +264,7 @@ describe("JSONAdapter", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<TestModel>(values, SubstitutingTestModel);
+            model = ModelFromObject(values, SubstitutingTestModel) as TestModel;
         } catch (err) {
             error = err;
         }
@@ -276,7 +276,7 @@ describe("JSONAdapter", () => {
         expect(model.count).toEqual(0);
         expect(model.nestedName).toEqual("bar");
 
-        expect(JSONAdapter.objectFromModel(model)).toEqual(values);
+        expect(ObjectFromModel(model)).toEqual(values);
     });
 
     it("should serialize different model classes", () => {
@@ -289,7 +289,7 @@ describe("JSONAdapter", () => {
         let error: Error | undefined;
 
         try {
-            chocolateModel = JSONAdapter.modelFromObject<ChocolateClassClusterModel>(chocolateValues, ClassClusterModel);
+            chocolateModel = ModelFromObject(chocolateValues, ClassClusterModel) as ChocolateClassClusterModel;
         } catch (err) {
             error = err;
         }
@@ -299,7 +299,7 @@ describe("JSONAdapter", () => {
         expect(chocolateModel.flavor).toEqual("chocolate");
         expect(chocolateModel.bitterness).toEqual(100);
 
-        expect(JSONAdapter.objectFromModel(chocolateModel)).toEqual(chocolateValues);
+        expect(ObjectFromModel(chocolateModel)).toEqual(chocolateValues);
 
         const strawberryValues = {
             "flavor": "strawberry",
@@ -309,7 +309,7 @@ describe("JSONAdapter", () => {
         let strawberryModel: StrawberryClassClusterModel;
 
         try {
-            strawberryModel = JSONAdapter.modelFromObject<StrawberryClassClusterModel>(strawberryValues, ClassClusterModel);
+            strawberryModel = ModelFromObject(strawberryValues, ClassClusterModel) as StrawberryClassClusterModel;
         } catch (err) {
             error = err;
         }
@@ -319,7 +319,7 @@ describe("JSONAdapter", () => {
         expect(strawberryModel.flavor).toEqual("strawberry");
         expect(strawberryModel.freshness).toEqual(20);
 
-        expect(JSONAdapter.objectFromModel(strawberryModel)).toEqual(strawberryValues);
+        expect(ObjectFromModel(strawberryModel)).toEqual(strawberryValues);
     });
 
     it("should return an error when no suitable model class is found", () => {
@@ -327,7 +327,7 @@ describe("JSONAdapter", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<TestModel>({}, SubstitutingTestModel);
+            model = ModelFromObject({}, SubstitutingTestModel) as TestModel;
         } catch (err) {
             error = err;
         }
@@ -343,7 +343,7 @@ describe("JSONAdapter", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromJSON<TestModel>(null, TestModel);
+            model = ModelFromJSON(null, TestModel);
         } catch (err) {
             error = err;
         }
@@ -362,7 +362,7 @@ describe("JSONAdapter", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<InvalidTransformersModel>(values, InvalidTransformersModel);
+            model = ModelFromObject(values, InvalidTransformersModel);
         } catch (err) {
             error = err;
         }
@@ -390,7 +390,7 @@ describe("Deserializing multiple models", () => {
         let error: Error | undefined;
 
         try {
-            models = JSONAdapter.modelsFromJSONArray<TestModel>(JSON.stringify(jsonModels), TestModel);
+            models = ModelsFromJSONArray(JSON.stringify(jsonModels), TestModel);
         } catch (err) {
             error = err;
         }
@@ -407,7 +407,7 @@ describe("Deserializing multiple models", () => {
         let error: Error | undefined;
 
         try {
-            models = JSONAdapter.modelsFromArray<TestModel>(jsonModels, TestModel);
+            models = ModelsFromArray(jsonModels, TestModel);
         } catch (err) {
             error = err;
         }
@@ -424,7 +424,7 @@ describe("Deserializing multiple models", () => {
         let error: Error | undefined;
 
         try {
-            models = JSONAdapter.modelsFromArray<TestModel>(null, TestModel);
+            models = ModelsFromArray(null, TestModel);
         } catch (err) {
             error = err;
         }
@@ -438,7 +438,7 @@ describe("Deserializing multiple models", () => {
         let error: Error | undefined;
 
         try {
-            models = JSONAdapter.modelsFromArray<TestModel>({} as any[], TestModel);
+            models = ModelsFromArray({} as any[], TestModel);
         } catch (err) {
             error = err;
         }
@@ -464,7 +464,7 @@ it("should return undefined and an error if it fails to initialize any model fro
     let error: Error | undefined;
 
     try {
-        models = JSONAdapter.modelsFromArray<SubstitutingTestModel>(jsonModels, SubstitutingTestModel);
+        models = ModelsFromArray(jsonModels, SubstitutingTestModel);
     } catch (err) {
         error = err;
     }
@@ -487,7 +487,7 @@ it("should return null if it fails to parse any model from an array", () => {
     let error: Error | undefined;
 
     try {
-        models = JSONAdapter.modelsFromArray<SubstitutingTestModel>(jsonModels, SubstitutingTestModel);
+        models = ModelsFromArray(jsonModels, SubstitutingTestModel);
     } catch (err) {
         error = err;
     }
@@ -508,7 +508,7 @@ describe("serialize array of objects from models", () => {
         let error: Error | undefined;
 
         try {
-            objects = JSONAdapter.JSONArrayFromModels([model1, model2]);
+            objects = JSONArrayFromModels([model1, model2]);
         } catch (err) {
             error = err;
         }
@@ -522,7 +522,7 @@ describe("serialize array of objects from models", () => {
         let error: Error | undefined;
 
         try {
-            objects = JSONAdapter.arrayFromModels([model1, model2]);
+            objects = ArrayFromModels([model1, model2]);
         } catch (err) {
             error = err;
         }
@@ -540,7 +540,7 @@ describe("serialize array of objects from models", () => {
         let error: Error | undefined;
 
         try {
-            objects = JSONAdapter.arrayFromModels(null);
+            objects = ArrayFromModels(null);
         } catch (err) {
             error = err;
         }
@@ -554,7 +554,7 @@ describe("serialize array of objects from models", () => {
         let error: Error | undefined;
 
         try {
-            objects = JSONAdapter.arrayFromModels({} as Serializable[]);
+            objects = ArrayFromModels({} as Serializable[]);
         } catch (err) {
             error = err;
         }
@@ -616,7 +616,7 @@ describe("recursive models", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<RecursiveGroupModel>(values, RecursiveGroupModel);
+            model = ModelFromObject(values, RecursiveGroupModel);
         } catch (err) {
             error = err;
         }
@@ -643,7 +643,7 @@ describe("recursive models", () => {
         expect(model.users[0].groups[1].owner).toBeNull();
         expect(model.users[0].groups[1].users).toBeNull();
 
-        expect(JSONAdapter.objectFromModel(model)).toEqual(values);
+        expect(ObjectFromModel(model)).toEqual(values);
     });
 
     it("should throw error on non-object input", () => {
@@ -655,7 +655,7 @@ describe("recursive models", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<RecursiveGroupModel>(values, RecursiveGroupModel);
+            model = ModelFromObject(values, RecursiveGroupModel);
         } catch (err) {
             error = err;
         }
@@ -674,7 +674,7 @@ describe("recursive models", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<RecursiveGroupModel>(values, RecursiveGroupModel);
+            model = ModelFromObject(values, RecursiveGroupModel);
         } catch (err) {
             error = err;
         }
@@ -695,7 +695,7 @@ describe("recursive models", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<HostedURLsModel>(values, HostedURLsModel);
+            model = ModelFromObject(values, HostedURLsModel);
         } catch (err) {
             error = err;
         }
@@ -722,7 +722,7 @@ describe("recursive models", () => {
         let error: Error | undefined;
 
         try {
-            model = JSONAdapter.modelFromObject<HostedURLsModel>(values, HostedURLsModel);
+            model = ModelFromObject(values, HostedURLsModel);
         } catch (err) {
             error = err;
         }
@@ -734,7 +734,7 @@ describe("recursive models", () => {
         expect(model.urls[1]).toBeNull();
         expect(model.urls[2].url).toEqual(new URL("http://bar.com"));
 
-        expect(JSONAdapter.objectFromModel(model)).toEqual(values);
+        expect(ObjectFromModel(model)).toEqual(values);
     });
 
     it("should throw error when deserializing a non-array", () => {
@@ -745,7 +745,7 @@ describe("recursive models", () => {
         let error: Error | undefined;
 
         try {
-            values = JSONAdapter.objectFromModel(model);
+            values = ObjectFromModel(model);
         } catch (err) {
             error = err;
         }
@@ -769,7 +769,7 @@ describe("recursive models", () => {
         let error: Error | undefined;
 
         try {
-            values = JSONAdapter.objectFromModel(model);
+            values = ObjectFromModel(model);
         } catch (err) {
             error = err;
         }

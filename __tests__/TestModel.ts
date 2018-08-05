@@ -1,6 +1,6 @@
-import { Serializable, ValueTransformer, ModelClass, JSONAdapter, KeyPaths } from "../lib";
+import { Serializable, ValueTransformer, KeyPaths, Model, Newable } from "../lib";
 
-export class TestModel extends Serializable {
+export class TestModel extends Model {
     /**
      * Must be less than 10 characters.
      * 
@@ -60,7 +60,7 @@ interface Coordinate {
     longitude: number;
 }
 
-export class MultiKeypathModel extends Serializable {
+export class MultiKeypathModel extends Model {
     /**
      * This property is associated with the "latitude" and "longitude" keys in JSON.
      */
@@ -115,7 +115,7 @@ export class URL {
     }
 }
 
-export class URLModel extends Serializable {
+export class URLModel extends Model {
     /**
      * Defaults to http://github.com.
      */
@@ -178,13 +178,13 @@ export class URLSubclassModel extends URLModel {
 /**
  * Parses MTLTestModel objects from JSON instead.
  */
-export class SubstitutingTestModel extends Serializable {
+export class SubstitutingTestModel extends Model {
     /* istanbul ignore next */
     static JSONKeyPaths(): KeyPaths<SubstitutingTestModel> {
         return {};
     }
 
-    static classForParsingObject(json: any): ModelClass {
+    static classForParsingObject(json: any): Newable<Serializable> {
         if (json.username != null) {
             return TestModel;
         }
@@ -192,7 +192,7 @@ export class SubstitutingTestModel extends Serializable {
     }
 }
 
-export class ClassClusterModel extends Serializable {
+export class ClassClusterModel extends Model {
     flavor: string;
 
     static JSONKeyPaths(): KeyPaths<ClassClusterModel> {
@@ -201,7 +201,7 @@ export class ClassClusterModel extends Serializable {
         };
     }
 
-    static classForParsingObject(json: any): ModelClass {
+    static classForParsingObject(json: any): Newable<Serializable> {
         if (json.flavor === "chocolate") {
             return ChocolateClassClusterModel;
         }
@@ -260,7 +260,7 @@ export class StrawberryClassClusterModel extends ClassClusterModel {
     }
 }
 
-export class RecursiveUserModel extends Serializable {
+export class RecursiveUserModel extends Model {
     name: string;
     groups: RecursiveGroupModel[];
 
@@ -272,11 +272,11 @@ export class RecursiveUserModel extends Serializable {
     }
 
     static groupsJSONTransformer(): ValueTransformer {
-        return JSONAdapter.arrayTransformerWithModelClass(RecursiveGroupModel);
+        return ValueTransformer.arrayTransformer(RecursiveGroupModel);
     }
 }
 
-export class RecursiveGroupModel extends Serializable {
+export class RecursiveGroupModel extends Model {
     owner: RecursiveUserModel;
     users: RecursiveUserModel[];
 
@@ -288,15 +288,15 @@ export class RecursiveGroupModel extends Serializable {
     }
 
     static ownerJSONTransformer(): ValueTransformer {
-        return JSONAdapter.dictionaryTransformerWithModelClass(RecursiveUserModel);
+        return ValueTransformer.objectTransformer(RecursiveUserModel);
     }
 
     static usersJSONTransformer(): ValueTransformer {
-        return JSONAdapter.arrayTransformerWithModelClass(RecursiveUserModel);
+        return ValueTransformer.arrayTransformer(RecursiveUserModel);
     }
 }
 
-export class HostedURLsModel extends Serializable {
+export class HostedURLsModel extends Model {
     urls: URLModel[];
 
     static JSONKeyPaths(): KeyPaths<HostedURLsModel> {
@@ -306,11 +306,11 @@ export class HostedURLsModel extends Serializable {
     }
 
     static urlsJSONTransformer(): ValueTransformer {
-        return JSONAdapter.arrayTransformerWithModelClass(URLModel);
+        return ValueTransformer.arrayTransformer(URLModel);
     }
 }
 
-export class DefaultValuesModel extends Serializable {
+export class DefaultValuesModel extends Model {
     name: string;
 
     /**
@@ -331,7 +331,7 @@ export class DefaultValuesModel extends Serializable {
     }
 }
 
-export class InvalidTransformersModel extends Serializable {
+export class InvalidTransformersModel extends Model {
     foo: string;
     bar: string;
 

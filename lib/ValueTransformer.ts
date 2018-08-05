@@ -1,6 +1,8 @@
 import isEqual = require("lodash.isequal");
 import { CreateError } from "./utils";
 import { MantleErrorTypes } from "./constants";
+import { Serializable, Newable } from "./Serializable";
+import { ModelFromObject, ObjectFromModel } from "./JSONAdapter";
 
 /**
  * A function that represents a transformation.
@@ -168,4 +170,104 @@ export class ValueTransformer {
         )
     }
 
+    /**
+     * Creates a reversible transformer to convert an object into a Model object, and vice-versa.
+     * 
+     * @param Class The Model subclass to attempt to parse from the JSON.
+     */
+    static objectTransformer<T extends Serializable>(Class: Newable<T>): ValueTransformer {
+        return ValueTransformer.forwardAndReversible(
+            (value?: any) => {
+                if (value == null) return null;
+
+                // make sure the value is an object
+                if (typeof value !== "object") {
+                    throw CreateError(`Could not convert JSON object to model object. Expected an object, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                }
+
+                return ModelFromObject(value, Class);
+            },
+            (value?: Serializable) => {
+                if (value == null) return null;
+
+                return ObjectFromModel(value);
+            }
+        );
+    }
+
+    /**
+     * Creates a reversible transformer to convert an array of objects into an array of Model
+     * objects, and vice-versa.
+     * 
+     * @param Class The Model subclass to attempt to parse from each JSON object.
+     */
+    static arrayTransformer<T extends Serializable>(Class: Newable<T>): ValueTransformer {
+        return ValueTransformer.forwardAndReversible((value) => {
+            // make sure we have a value
+            if (value == null) return null;
+
+            // make sure the value is an array
+            if (!Array.isArray(value)) {
+                throw CreateError(`Could not convert JSON array to model array. Expected an array, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+            }
+
+            const models: any[] = [];
+
+            for (const object of value) {
+                // if the object is null, just add null
+                if (object == null) {
+                    models.push(null);
+                    continue;
+                }
+
+                // make sure the value is an object
+                if (typeof object !== "object") {
+                    throw CreateError(`Could not convert JSON array to model array. Expected an object or null, got: ${object}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                }
+
+                // convert the model
+                const model = ModelFromObject(object, Class);
+
+                /* istanbul ignore next */
+                if (!model) continue;
+
+                models.push(model);
+            }
+
+            return models;
+
+        }, (value) => {
+            if (value == null) return null;
+
+            // make sure the value is an array
+            if (!Array.isArray(value)) {
+                throw CreateError(`Could not convert model array to JSON array. Expected an array, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+            }
+
+            const objects: any[] = [];
+
+            for (const model of value) {
+                // if the object is null, just add null
+                if (model == null) {
+                    objects.push(null);
+                    continue;
+                }
+
+                // make sure the value is an object
+                if (typeof model !== "object") {
+                    throw CreateError(`Could not convert model array to JSON array. Expected a model or null, got: ${model}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                }
+
+                // convert the model
+                const object = ObjectFromModel(model);
+
+                /* istanbul ignore next */
+                if (!object) continue;
+
+                objects.push(object);
+            }
+
+            return objects;
+        });
+    }
 }

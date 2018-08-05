@@ -54,11 +54,9 @@ export interface Serializable {
      * 
      * @param json 
      */
-    classForParsingObject?(json: any): ModelClass;
+    classForParsingObject?<T extends Serializable>(json: any): Newable<T>;
 }
 
 export class Serializable {
 
 }
-
-export type ModelClass = Serializable & Newable<Serializable>;
