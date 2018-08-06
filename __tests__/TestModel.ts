@@ -3,22 +3,22 @@ import { Serializable, ValueTransformer, KeyPaths, Model, Newable } from "../lib
 export class TestModel extends Model {
     /**
      * Must be less than 10 characters.
-     * 
+     *
      * This property is associated with a "username" key in JSON.
      */
-    name: string;
+    public name: string;
 
     /**
      * Defaults to 1.
-     * 
+     *
      * This property is a string in JSON.
      */
-    count: number;
+    public count: number;
 
     /**
      * This property is associated with a "nested.name" key path in JSON.
      */
-    nestedName: string;
+    public nestedName: string;
 
     constructor() {
         super();
@@ -26,7 +26,7 @@ export class TestModel extends Model {
         this.count = 1;
     }
 
-    static JSONKeyPaths(): KeyPaths<TestModel> {
+    public static JSONKeyPaths(): KeyPaths<TestModel> {
         return {
             "name": "username",
             "count": "count",
@@ -34,13 +34,14 @@ export class TestModel extends Model {
         };
     }
 
-    static countJSONTransformer(): ValueTransformer {
+    public static countJSONTransformer(): ValueTransformer {
         return ValueTransformer.forwardAndReversible(
             (value: string) => {
                 const result = parseInt(value);
                 if (!isNaN(result)) {
                     return result;
                 }
+
                 return null;
             },
             (value?: number) => {
@@ -48,10 +49,11 @@ export class TestModel extends Model {
                 if (value != null) {
                     return value.toString();
                 }
+
                 /* istanbul ignore next */
                 return null;
-            }
-        )
+            },
+        );
     }
 }
 
@@ -64,45 +66,45 @@ export class MultiKeypathModel extends Model {
     /**
      * This property is associated with the "latitude" and "longitude" keys in JSON.
      */
-    location: Coordinate;
+    public location: Coordinate;
 
     /**
      * This property is associated with the "nested.latitude" and "nested.longitude"
      * keys in JSON.
      */
-    nestedLocation: Coordinate;
+    public nestedLocation: Coordinate;
 
-    static JSONKeyPaths(): KeyPaths<MultiKeypathModel> {
+    public static JSONKeyPaths(): KeyPaths<MultiKeypathModel> {
         return {
             "location": ["latitude", "longitude"],
-            "nestedLocation": ["nested.latitude", "nested.longitude"]
+            "nestedLocation": ["nested.latitude", "nested.longitude"],
         };
     }
 
-    static locationJSONTransformer(): ValueTransformer {
+    public static locationJSONTransformer(): ValueTransformer {
         return ValueTransformer.forward(
             (value) => {
                 return value;
-            }
+            },
         );
     }
 
-    static nestedLocationJSONTransformer(): ValueTransformer {
+    public static nestedLocationJSONTransformer(): ValueTransformer {
         return ValueTransformer.forwardAndReversible(
             (value) => {
                 return value.nested;
             },
             (value: Coordinate) => {
                 return {
-                    "nested": value
+                    "nested": value,
                 };
-            }
-        )
+            },
+        );
     }
 }
 
 export class URL {
-    url: string;
+    public url: string;
 
     constructor(url: string) {
         const re = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
@@ -119,7 +121,7 @@ export class URLModel extends Model {
     /**
      * Defaults to http://github.com.
      */
-    url: URL;
+    public url: URL;
 
     constructor() {
         super();
@@ -127,13 +129,13 @@ export class URLModel extends Model {
         this.url = new URL("http://github.com");
     }
 
-    static JSONKeyPaths(): KeyPaths<URLModel> {
+    public static JSONKeyPaths(): KeyPaths<URLModel> {
         return {
             "url": "url",
         };
     }
 
-    static urlJSONTransformer(): ValueTransformer {
+    public static urlJSONTransformer(): ValueTransformer {
         return ValueTransformer.forwardAndReversible(
             (value: string) => {
                 return new URL(value);
@@ -143,8 +145,8 @@ export class URLModel extends Model {
                     return value.url;
                 }
                 throw new Error("Invalid URL");
-            }
-        )
+            },
+        );
     }
 }
 
@@ -152,7 +154,7 @@ export class URLSubclassModel extends URLModel {
     /**
      * Defaults to http://foo.com.
      */
-    otherUrl: URL;
+    public otherUrl: URL;
 
     constructor() {
         super();
@@ -160,14 +162,14 @@ export class URLSubclassModel extends URLModel {
         this.otherUrl = new URL("http://foo.com");
     }
 
-    static JSONKeyPaths(): KeyPaths<URLSubclassModel> {
+    public static JSONKeyPaths(): KeyPaths<URLSubclassModel> {
         return {
             ...super.JSONKeyPaths(),
             "otherUrl": "otherUrl",
         };
     }
 
-    static JSONTransformerForKey(key: string): ValueTransformer {
+    public static JSONTransformerForKey(key: string): ValueTransformer {
         /* istanbul ignore else */
         if (key === "otherUrl") {
             return URLModel.urlJSONTransformer();
@@ -180,28 +182,29 @@ export class URLSubclassModel extends URLModel {
  */
 export class SubstitutingTestModel extends Model {
     /* istanbul ignore next */
-    static JSONKeyPaths(): KeyPaths<SubstitutingTestModel> {
+    public static JSONKeyPaths(): KeyPaths<SubstitutingTestModel> {
         return {};
     }
 
-    static classForParsingObject(json: any): Newable<Serializable> {
+    public static classForParsingObject(json: any): Newable<Serializable> {
         if (json.username != null) {
             return TestModel;
         }
+
         return null;
     }
 }
 
 export class ClassClusterModel extends Model {
-    flavor: string;
+    public flavor: string;
 
-    static JSONKeyPaths(): KeyPaths<ClassClusterModel> {
+    public static JSONKeyPaths(): KeyPaths<ClassClusterModel> {
         return {
             "flavor": "flavor",
         };
     }
 
-    static classForParsingObject(json: any): Newable<Serializable> {
+    public static classForParsingObject(json: any): Newable<Serializable> {
         if (json.flavor === "chocolate") {
             return ChocolateClassClusterModel;
         }
@@ -217,28 +220,28 @@ export class ChocolateClassClusterModel extends ClassClusterModel {
     /**
      * Associated with the "chocolate_bitterness" JSON key and transformed to a string.
      */
-    bitterness: number;
+    public bitterness: number;
 
-    get flavor(): string {
+    public get flavor(): string {
         return "chocolate";
     }
 
-    static JSONKeyPaths(): KeyPaths<ChocolateClassClusterModel> {
+    public static JSONKeyPaths(): KeyPaths<ChocolateClassClusterModel> {
         return {
             ...super.JSONKeyPaths(),
             "bitterness": "chocolate_bitterness",
         };
     }
 
-    static bitternessJSONTransformer(): ValueTransformer {
+    public static bitternessJSONTransformer(): ValueTransformer {
         return ValueTransformer.forwardAndReversible(
             (value: string) => {
                 return parseInt(value);
             },
             (value: number) => {
                 return value.toString();
-            }
-        )
+            },
+        );
     }
 }
 
@@ -246,13 +249,13 @@ export class StrawberryClassClusterModel extends ClassClusterModel {
     /**
      * Associated with the "strawberry_freshness" JSON key.
      */
-    freshness: number;
+    public freshness: number;
 
-    get flavor(): string {
+    public get flavor(): string {
         return "strawberry";
     }
 
-    static JSONKeyPaths(): KeyPaths<StrawberryClassClusterModel> {
+    public static JSONKeyPaths(): KeyPaths<StrawberryClassClusterModel> {
         return {
             ...super.JSONKeyPaths(),
             "freshness": "strawberry_freshness",
@@ -261,62 +264,62 @@ export class StrawberryClassClusterModel extends ClassClusterModel {
 }
 
 export class RecursiveUserModel extends Model {
-    name: string;
-    groups: RecursiveGroupModel[];
+    public name: string;
+    public groups: RecursiveGroupModel[];
 
-    static JSONKeyPaths() {
+    public static JSONKeyPaths(): KeyPaths<RecursiveUserModel> {
         return {
             "name": "name_",
             "groups": "groups_",
         };
     }
 
-    static groupsJSONTransformer(): ValueTransformer {
+    public static groupsJSONTransformer(): ValueTransformer {
         return ValueTransformer.arrayTransformer(RecursiveGroupModel);
     }
 }
 
 export class RecursiveGroupModel extends Model {
-    owner: RecursiveUserModel;
-    users: RecursiveUserModel[];
+    public owner: RecursiveUserModel;
+    public users: RecursiveUserModel[];
 
-    static JSONKeyPaths(): KeyPaths<RecursiveGroupModel> {
+    public static JSONKeyPaths(): KeyPaths<RecursiveGroupModel> {
         return {
             "owner": "owner_",
             "users": "users_",
         };
     }
 
-    static ownerJSONTransformer(): ValueTransformer {
+    public static ownerJSONTransformer(): ValueTransformer {
         return ValueTransformer.objectTransformer(RecursiveUserModel);
     }
 
-    static usersJSONTransformer(): ValueTransformer {
+    public static usersJSONTransformer(): ValueTransformer {
         return ValueTransformer.arrayTransformer(RecursiveUserModel);
     }
 }
 
 export class HostedURLsModel extends Model {
-    urls: URLModel[];
+    public urls: URLModel[];
 
-    static JSONKeyPaths(): KeyPaths<HostedURLsModel> {
+    public static JSONKeyPaths(): KeyPaths<HostedURLsModel> {
         return {
             "urls": "urls",
         };
     }
 
-    static urlsJSONTransformer(): ValueTransformer {
+    public static urlsJSONTransformer(): ValueTransformer {
         return ValueTransformer.arrayTransformer(URLModel);
     }
 }
 
 export class DefaultValuesModel extends Model {
-    name: string;
+    public name: string;
 
     /**
      * Defaults to foo
      */
-    foo: string;
+    public foo: string;
 
     constructor() {
         super();
@@ -324,7 +327,7 @@ export class DefaultValuesModel extends Model {
         this.foo = "foo";
     }
 
-    static JSONKeyPaths(): KeyPaths<DefaultValuesModel> {
+    public static JSONKeyPaths(): KeyPaths<DefaultValuesModel> {
         return {
             name: "name",
         };
@@ -332,21 +335,21 @@ export class DefaultValuesModel extends Model {
 }
 
 export class InvalidTransformersModel extends Model {
-    foo: string;
-    bar: string;
+    public foo: string;
+    public bar: string;
 
-    static JSONKeyPaths(): KeyPaths<InvalidTransformersModel> {
+    public static JSONKeyPaths(): KeyPaths<InvalidTransformersModel> {
         return {
             foo: "foo",
             bar: "bar",
         };
     }
 
-    static fooJSONTransformer() {
+    public static fooJSONTransformer(): ValueTransformer {
         return null;
     }
 
-    static JSONTransformerForKey() {
+    public static JSONTransformerForKey(): ValueTransformer {
         return null;
     }
 }

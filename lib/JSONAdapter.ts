@@ -11,11 +11,11 @@ type ValueTransformerMap = {
 
 /**
  * Collect all value transformers needed for a given model.
- * 
+ *
  * @param Class The class from which to parse the JSON.
  */
-function valueTransformersForModel<T extends Serializable>(Class: Newable<T>) {
-    let result: ValueTransformerMap = {};
+function valueTransformersForModel<T extends Serializable>(Class: Newable<T>): ValueTransformerMap {
+    const result: ValueTransformerMap = {};
 
     const jsonKeyPaths = Class.prototype.constructor.JSONKeyPaths();
 
@@ -55,23 +55,13 @@ function valueTransformersForModel<T extends Serializable>(Class: Newable<T>) {
 }
 
 /**
- * Deserializes a model from a JSON string.
- * 
- * @param jsonString A JSON string.
- * @param Class The model to use for JSON serialization.
- */
-export function ModelFromJSON<T extends Serializable>(jsonString: string, Class: Newable<T>): T | null {
-    return ModelFromObject(JSON.parse(jsonString), Class);
-}
-
-/**
  * Deserializes a model from an object.
- * 
+ *
  * @param json An object.
  * @param Class The model to use for JSON serialization
  */
 export function ModelFromObject<T extends Serializable>(json: any, Class: Newable<T>): T | null {
-    if (json == null) return null;
+    if (json == null) { return null; }
 
     // if the class implements classForParsingObject
     if (Class.prototype.constructor.classForParsingObject && typeof Class.prototype.constructor.classForParsingObject === "function") {
@@ -83,7 +73,7 @@ export function ModelFromObject<T extends Serializable>(json: any, Class: Newabl
         }
 
         // if the class is different than the one given as a parameter
-        if (classToUse != Class) {
+        if (classToUse !== Class) {
             return ModelFromObject(json, classToUse);
         }
     }
@@ -102,9 +92,8 @@ export function ModelFromObject<T extends Serializable>(json: any, Class: Newabl
         // if the key path is a string
         if (typeof keyPath === "string") {
             value = get(json, keyPath);
-        }
-        // else it must be an array of strings
-        else {
+        } else {
+            // else it must be an array of strings
             for (const path of keyPath) {
                 set(value, path, get(json, path));
             }
@@ -130,24 +119,14 @@ export function ModelFromObject<T extends Serializable>(json: any, Class: Newabl
 }
 
 /**
- * Attempts to parse a JSON string into model objects of a specific class.
- * 
- * @param jsonString A JSON string.
- * @param Class The model to use for JSON serialization.
- */
-export function ModelsFromJSONArray<T extends Serializable>(jsonString: string, Class: Newable<T>): T[] | null {
-    return ModelsFromArray(JSON.parse(jsonString), Class);
-}
-
-/**
  * Attempts to parse an array of objects into model objects of a specific class.
- * 
+ *
  * @param json An array of objects.
  * @param Class The model to use for JSON serialization.
  */
 export function ModelsFromArray<T extends Serializable>(json: any[], Class: Newable<T>): T[] | null {
     // make sure we have a value
-    if (json == null) return null;
+    if (json == null) { return null; }
 
     // make sure the value is an array
     if (!Array.isArray(json)) {
@@ -159,7 +138,7 @@ export function ModelsFromArray<T extends Serializable>(json: any[], Class: Newa
     for (const object of json) {
         const model = ModelFromObject<T>(object, Class);
 
-        if (!model) return null;
+        if (!model) { return null; }
 
         models.push(model);
     }
@@ -169,11 +148,11 @@ export function ModelsFromArray<T extends Serializable>(json: any[], Class: Newa
 
 /**
  * Serializes a model into an object.
- * 
+ *
  * @param model The model to use for JSON serialization.
  */
 export function ObjectFromModel<T extends Serializable>(model: T): any {
-    let result: any = {};
+    const result: any = {};
 
     // get the class of the model
     const Class = model.constructor as Newable<T>;
@@ -193,13 +172,11 @@ export function ObjectFromModel<T extends Serializable>(model: T): any {
         if (typeof keyPath === "string") {
             if (transformer && transformer.allowsReverseTransformation()) {
                 set(result, keyPath, transformer.reverseTransformedValue(value));
-            }
-            else {
+            } else {
                 set(result, keyPath, value);
             }
-        }
-        // else it must be an array of strings
-        else {
+        } else {
+            // else it must be an array of strings
             for (const path of keyPath) {
                 if (transformer && transformer.allowsReverseTransformation()) {
                     set(result, path, get(transformer.reverseTransformedValue(value), path));
@@ -215,12 +192,12 @@ export function ObjectFromModel<T extends Serializable>(model: T): any {
 
 /**
  * Converts an array of models into an object array.
- * 
+ *
  * @param models An array of models to use for JSON serialization.
  */
 export function ArrayFromModels<T extends Serializable>(models: T[]): any[] | null {
     // make sure we have a value
-    if (models == null) return null;
+    if (models == null) { return null; }
 
     // make sure the value is an array
     if (!Array.isArray(models)) {
@@ -233,7 +210,7 @@ export function ArrayFromModels<T extends Serializable>(models: T[]): any[] | nu
         const object = ObjectFromModel(model);
 
         /* istanbul ignore next */
-        if (!object) return null;
+        if (!object) { return null; }
 
         objectArray.push(object);
     }

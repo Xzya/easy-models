@@ -1,5 +1,8 @@
-import { Serializable, ObjectFromModel, Model } from "../lib";
-import { TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel, RecursiveGroupModel, URLSubclassModel, URL, HostedURLsModel, DefaultValuesModel, ClassClusterModel, InvalidTransformersModel } from "./TestModel";
+import { Serializable } from "../lib";
+import {
+    TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel,
+    RecursiveGroupModel, URLSubclassModel, URL, HostedURLsModel, DefaultValuesModel, ClassClusterModel, InvalidTransformersModel,
+} from "./TestModel";
 import { MantleErrorTypes } from "../lib/constants";
 
 describe("JSONAdapter", () => {
@@ -13,19 +16,9 @@ describe("JSONAdapter", () => {
             "username": null,
             "count": "5",
             "nested": {
-                "name": null
-            }
+                "name": null,
+            },
         };
-
-        it("should initialize nested key paths from JSON string", () => {
-            const model = TestModel.fromJSON(JSON.stringify(values));
-
-            expect(model).toBeDefined();
-            expect(model.name).toBeNull();
-            expect(model.count).toEqual(5);
-
-            expect(model.toJSON()).toEqual(expected);
-        });
 
         it("should initialize nested key paths from JSON", () => {
             const model = TestModel.from(values);
@@ -36,21 +29,6 @@ describe("JSONAdapter", () => {
 
             expect(model.toJSON()).toEqual(expected);
         });
-    });
-
-    it("should return error on invalid JSON input", () => {
-        let model: TestModel;
-        let error: Error;
-
-        try {
-            model = TestModel.fromJSON("{");
-        } catch (err) {
-            error = err;
-        }
-
-        expect(model).toBeUndefined();
-        expect(error).toBeDefined();
-        expect(error.name).toEqual(SyntaxError.name);
     });
 
     it("should return null when serializing to JSON with invalid data", () => {
@@ -64,9 +42,9 @@ describe("JSONAdapter", () => {
         const values = {
             "username": "foo",
             "nested": {
-                "name": "bar"
+                "name": "bar",
             },
-            "count": "0"
+            "count": "0",
         };
 
         const model = TestModel.from(values);
@@ -85,8 +63,8 @@ describe("JSONAdapter", () => {
             "longitude": 12,
             "nested": {
                 "latitude": 12,
-                "longitude": 34
-            }
+                "longitude": 34,
+            },
         };
 
         const model = MultiKeypathModel.from(values);
@@ -173,7 +151,7 @@ describe("JSONAdapter", () => {
 
     it("should initialize default values", () => {
         const values = {
-            "name": "John"
+            "name": "John",
         };
 
         const model = DefaultValuesModel.from(values);
@@ -265,11 +243,6 @@ describe("JSONAdapter", () => {
 
 
 
-    it("should return null model from null input", () => {
-        const model = TestModel.fromJSON(null);
-
-        expect(model).toBeNull();
-    });
 
     it("should ignore invalid transformers", () => {
         const values = {
@@ -285,25 +258,15 @@ describe("JSONAdapter", () => {
     });
 });
 
-
 describe("Deserializing multiple models", () => {
     const values = [
         {
-            "username": "foo"
+            "username": "foo",
         },
         {
-            "username": "bar"
-        }
+            "username": "bar",
+        },
     ];
-
-    it("should initialize models from a JSON string of an array", () => {
-        const models = TestModel.fromJSONArray(JSON.stringify(values));
-
-        expect(models).toBeDefined();
-        expect(models.length).toEqual(2);
-        expect(models[0].name).toEqual("foo");
-        expect(models[1].name).toEqual("bar");
-    });
 
     it("should initialize models from an array of objects", () => {
         const models = TestModel.fromArray(values);
@@ -334,32 +297,17 @@ describe("Deserializing multiple models", () => {
         expect(error).toBeDefined();
         expect(error.name).toEqual(MantleErrorTypes.JSONAdapterInvalidJSON);
     });
-
-    it("should return error on invalid JSON input", () => {
-        let models: TestModel[];
-        let error: Error;
-
-        try {
-            models = TestModel.fromJSONArray("{");
-        } catch (err) {
-            error = err;
-        }
-
-        expect(models).toBeUndefined();
-        expect(error).toBeDefined();
-        expect(error.name).toEqual(SyntaxError.name);
-    });
 });
 
 it("should return undefined and an error if it fails to initialize any model from an array", () => {
     const values = [
         {
             "username": "foo",
-            "count": "1"
+            "count": "1",
         },
         {
-            "count": ["This won't parse"]
-        }
+            "count": ["This won't parse"],
+        },
     ];
 
     let models: SubstitutingTestModel[];
@@ -380,9 +328,9 @@ it("should return null if it fails to parse any model from an array", () => {
     const values = [
         {
             "username": "foo",
-            "count": "1"
+            "count": "1",
         },
-        null
+        null,
     ];
 
     const models = SubstitutingTestModel.fromArray(values);
@@ -437,11 +385,11 @@ describe("recursive models", () => {
                     {
                         "owner_": {
                             "name_": "Jane",
-                            "groups_": null
+                            "groups_": null,
                         },
-                        "users_": null
-                    }
-                ]
+                        "users_": null,
+                    },
+                ],
             },
             "users_": [
                 {
@@ -454,25 +402,25 @@ describe("recursive models", () => {
                                     {
                                         "owner_": {
                                             "name_": "X",
-                                            "groups_": null
+                                            "groups_": null,
                                         },
-                                        "users_": null
-                                    }
-                                ]
+                                        "users_": null,
+                                    },
+                                ],
                             },
-                            "users_": null
+                            "users_": null,
                         },
                         {
                             "owner_": null,
-                            "users_": null
-                        }
-                    ]
+                            "users_": null,
+                        },
+                    ],
                 },
                 {
                     "name_": "John",
-                    "groups_": null
-                }
-            ]
+                    "groups_": null,
+                },
+            ],
         };
 
         const model = RecursiveGroupModel.from(values);
@@ -503,7 +451,7 @@ describe("recursive models", () => {
 
     it("should throw error on non-object input", () => {
         const values = {
-            "owner_": "foo"
+            "owner_": "foo",
         };
 
         let model: RecursiveGroupModel;
@@ -542,8 +490,8 @@ describe("recursive models", () => {
     it("should throw error if array item is not an object", () => {
         const values = {
             "urls": [
-                "foo"
-            ]
+                "foo",
+            ],
         };
 
         let model: HostedURLsModel;
@@ -564,13 +512,13 @@ describe("recursive models", () => {
         const values = {
             "urls": [
                 {
-                    "url": "http://foo.com"
+                    "url": "http://foo.com",
                 },
                 null,
                 {
-                    "url": "http://bar.com"
+                    "url": "http://bar.com",
                 },
-            ]
+            ],
         };
 
         const model = HostedURLsModel.from(values);

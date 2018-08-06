@@ -7,11 +7,11 @@ describe("Example model using GitHub issues", () => {
     }
 
     class GHUser extends Model {
-        readonly username: string;
-        readonly url: string;
-        readonly htmlUrl: string;
+        public readonly username: string;
+        public readonly url: string;
+        public readonly htmlUrl: string;
 
-        static JSONKeyPaths(): KeyPaths<GHUser> {
+        public static JSONKeyPaths(): KeyPaths<GHUser> {
             return {
                 username: "login",
                 url: "url",
@@ -21,19 +21,19 @@ describe("Example model using GitHub issues", () => {
     }
 
     class GHIssue extends Model {
-        readonly url: string;
-        readonly htmlUrl: string;
-        readonly number: number;
-        readonly state: GHIssueState;
-        readonly reporterLogin: string;
-        readonly assignee: GHUser;
-        readonly assignees: GHUser[];
-        readonly updatedAt: Date;
+        public readonly url: string;
+        public readonly htmlUrl: string;
+        public readonly number: number;
+        public readonly state: GHIssueState;
+        public readonly reporterLogin: string;
+        public readonly assignee: GHUser;
+        public readonly assignees: GHUser[];
+        public readonly updatedAt: Date;
 
-        title: string;
-        body: string;
+        public title: string;
+        public body: string;
 
-        retrievedAt: Date;
+        public retrievedAt: Date;
 
         constructor() {
             super();
@@ -41,7 +41,7 @@ describe("Example model using GitHub issues", () => {
             this.retrievedAt = new Date();
         }
 
-        static JSONKeyPaths(): KeyPaths<GHIssue> {
+        public static JSONKeyPaths(): KeyPaths<GHIssue> {
             return {
                 url: "url",
                 htmlUrl: "html_url",
@@ -56,29 +56,29 @@ describe("Example model using GitHub issues", () => {
             };
         }
 
-        static updatedAtJSONTransformer(): ValueTransformer {
+        public static updatedAtJSONTransformer(): ValueTransformer {
             return ValueTransformer.forwardAndReversible(
                 (value: string) => {
                     return new Date(value);
                 },
                 (value: Date) => {
                     return value.toISOString();
-                }
+                },
             );
         }
 
-        static stateJSONTransformer(): ValueTransformer {
+        public static stateJSONTransformer(): ValueTransformer {
             return ValueTransformer.valueMappingTransformer({
                 "open": GHIssueState.Open,
                 "closed": GHIssueState.Closed,
             });
         }
 
-        static assigneeJSONTransformer(): ValueTransformer {
+        public static assigneeJSONTransformer(): ValueTransformer {
             return ValueTransformer.objectTransformer(GHUser);
         }
 
-        static assigneesJSONTransformer(): ValueTransformer {
+        public static assigneesJSONTransformer(): ValueTransformer {
             return ValueTransformer.arrayTransformer(GHUser);
         }
     }
@@ -92,7 +92,7 @@ describe("Example model using GitHub issues", () => {
             "title": "Found a bug",
             "body": "I'm having a problem with this.",
             "user": {
-                "login": "octocat"
+                "login": "octocat",
             },
             "assignee": {
                 "login": "octocat",
@@ -104,7 +104,7 @@ describe("Example model using GitHub issues", () => {
                     "login": "octocat",
                     "url": "https://api.github.com/users/octocat",
                     "html_url": "https://github.com/octocat",
-                }
+                },
             ],
             "updated_at": "2011-04-22T13:33:48.000Z",
         };

@@ -33,7 +33,7 @@ describe("ValueTransformer", () => {
             },
             (value: string) => {
                 return value.substring(0, value.length - 3);
-            }
+            },
         );
 
         expect(transformer).toBeDefined();
@@ -90,7 +90,7 @@ describe("value mapping transformer", () => {
 
     describe("default values", () => {
         beforeEach(() => {
-            transformer = ValueTransformer.valueMappingTransformer(values, AdditionTypes.Default, "default")
+            transformer = ValueTransformer.valueMappingTransformer(values, AdditionTypes.Default, "default");
         });
 
         it("should transform unknown strings into the default enum value", () => {
@@ -156,13 +156,13 @@ describe("number transformer", () => {
 
 describe("invert transformer", () => {
     class TestTransformer extends ValueTransformer {
-        allowsReverseTransformation() {
+        public allowsReverseTransformation(): boolean {
             return true;
         }
-        transformedValue() {
+        public transformedValue(): any {
             return "forward";
         }
-        reverseTransformedValue() {
+        public reverseTransformedValue(): any {
             return "reverse";
         }
     }
