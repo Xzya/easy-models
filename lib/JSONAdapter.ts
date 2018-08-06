@@ -3,7 +3,7 @@ import set = require("lodash.set");
 import { Serializable, Newable } from "./Serializable";
 import { ValueTransformer } from "./ValueTransformer";
 import { CreateError } from "./utils";
-import { MantleErrorTypes } from "./constants";
+import { ErrorTypes } from "./constants";
 
 type ValueTransformerMap = {
     [key: string]: ValueTransformer;
@@ -69,7 +69,7 @@ export function ModelFromObject<T extends Serializable>(json: any, Class: Newabl
 
         // if the implementation didn't return any class
         if (!classToUse) {
-            throw CreateError("No model class could be found to parse the JSON", MantleErrorTypes.JSONAdapterNoClassFound);
+            throw CreateError("No model class could be found to parse the JSON", ErrorTypes.JSONAdapterNoClassFound);
         }
 
         // if the class is different than the one given as a parameter
@@ -130,7 +130,7 @@ export function ModelsFromArray<T extends Serializable>(json: any[], Class: Newa
 
     // make sure the value is an array
     if (!Array.isArray(json)) {
-        throw CreateError(`${Class} could not be created because an invalid object array was provided: ${json}.`, MantleErrorTypes.JSONAdapterInvalidJSON);
+        throw CreateError(`${Class} could not be created because an invalid object array was provided: ${json}.`, ErrorTypes.JSONAdapterInvalidJSON);
     }
 
     const models: T[] = [];
@@ -201,7 +201,7 @@ export function ArrayFromModels<T extends Serializable>(models: T[]): any[] | nu
 
     // make sure the value is an array
     if (!Array.isArray(models)) {
-        throw CreateError(`Could not create object array because an invalid model array was provided: ${models}.`, MantleErrorTypes.JSONAdapterInvalidJSON);
+        throw CreateError(`Could not create object array because an invalid model array was provided: ${models}.`, ErrorTypes.JSONAdapterInvalidJSON);
     }
 
     const objectArray: any[] = [];

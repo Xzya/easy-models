@@ -3,7 +3,7 @@ import {
     TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel,
     RecursiveGroupModel, URLSubclassModel, URL, HostedURLsModel, DefaultValuesModel, ClassClusterModel, InvalidTransformersModel,
 } from "./TestModel";
-import { MantleErrorTypes } from "../lib/constants";
+import { ErrorTypes } from "../lib/constants";
 
 describe("JSONAdapter", () => {
     describe("serialize nested key paths", () => {
@@ -238,7 +238,7 @@ describe("JSONAdapter", () => {
 
         expect(model).toBeUndefined();
         expect(error).toBeDefined();
-        expect(error.name).toEqual(MantleErrorTypes.JSONAdapterNoClassFound);
+        expect(error.name).toEqual(ErrorTypes.JSONAdapterNoClassFound);
     });
 
 
@@ -295,7 +295,7 @@ describe("Deserializing multiple models", () => {
 
         expect(models).toBeUndefined();
         expect(error).toBeDefined();
-        expect(error.name).toEqual(MantleErrorTypes.JSONAdapterInvalidJSON);
+        expect(error.name).toEqual(ErrorTypes.JSONAdapterInvalidJSON);
     });
 });
 
@@ -320,7 +320,7 @@ it("should return undefined and an error if it fails to initialize any model fro
     }
 
     expect(error).toBeDefined();
-    expect(error.name).toEqual(MantleErrorTypes.JSONAdapterNoClassFound);
+    expect(error.name).toEqual(ErrorTypes.JSONAdapterNoClassFound);
     expect(models).toBeUndefined();
 });
 
@@ -372,7 +372,7 @@ describe("serialize array of objects from models", () => {
 
         expect(objects).toBeUndefined();
         expect(error).toBeDefined();
-        expect(error.name).toEqual(MantleErrorTypes.JSONAdapterInvalidJSON);
+        expect(error.name).toEqual(ErrorTypes.JSONAdapterInvalidJSON);
     });
 });
 
@@ -465,7 +465,7 @@ describe("recursive models", () => {
 
         expect(model).toBeUndefined();
         expect(error).toBeDefined();
-        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+        expect(error.name).toEqual(ErrorTypes.TransformerHandlingInvalidInput);
     });
 
     it("should throw error on non-array input", () => {
@@ -484,7 +484,7 @@ describe("recursive models", () => {
 
         expect(model).toBeUndefined();
         expect(error).toBeDefined();
-        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+        expect(error.name).toEqual(ErrorTypes.TransformerHandlingInvalidInput);
     });
 
     it("should throw error if array item is not an object", () => {
@@ -505,7 +505,7 @@ describe("recursive models", () => {
 
         expect(model).toBeUndefined();
         expect(error).toBeDefined();
-        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+        expect(error.name).toEqual(ErrorTypes.TransformerHandlingInvalidInput);
     });
 
     it("should add null values to parsed array", () => {
@@ -547,7 +547,7 @@ describe("recursive models", () => {
 
         expect(values).toBeUndefined();
         expect(error).toBeDefined();
-        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+        expect(error.name).toEqual(ErrorTypes.TransformerHandlingInvalidInput);
     });
 
     it("should throw error when deserializing a non-object inside array", () => {
@@ -571,6 +571,6 @@ describe("recursive models", () => {
 
         expect(values).toBeUndefined();
         expect(error).toBeDefined();
-        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+        expect(error.name).toEqual(ErrorTypes.TransformerHandlingInvalidInput);
     });
 });

@@ -1,6 +1,6 @@
 import isEqual = require("lodash.isequal");
 import { CreateError } from "./utils";
-import { MantleErrorTypes } from "./constants";
+import { ErrorTypes } from "./constants";
 import { Serializable, Newable } from "./Serializable";
 import { ModelFromObject, ObjectFromModel } from "./JSONAdapter";
 
@@ -150,7 +150,7 @@ export class ValueTransformer {
 
                 // make sure the value is a string
                 if (typeof value !== "string") {
-                    throw CreateError(`Could not convert string to number. Expected a string as input, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                    throw CreateError(`Could not convert string to number. Expected a string as input, got: ${value}.`, ErrorTypes.TransformerHandlingInvalidInput);
                 }
 
                 const num = parseFloat(value);
@@ -166,7 +166,7 @@ export class ValueTransformer {
 
                 // make sure the value is a number
                 if (typeof value !== "number" || isNaN(value)) {
-                    throw CreateError(`Could not convert number to string. Expected a number as input, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                    throw CreateError(`Could not convert number to string. Expected a number as input, got: ${value}.`, ErrorTypes.TransformerHandlingInvalidInput);
                 }
 
                 return value.toLocaleString(locales, options);
@@ -186,7 +186,7 @@ export class ValueTransformer {
 
                 // make sure the value is an object
                 if (typeof value !== "object") {
-                    throw CreateError(`Could not convert JSON object to model object. Expected an object, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                    throw CreateError(`Could not convert JSON object to model object. Expected an object, got: ${value}.`, ErrorTypes.TransformerHandlingInvalidInput);
                 }
 
                 return ModelFromObject(value, Class);
@@ -213,7 +213,7 @@ export class ValueTransformer {
 
                 // make sure the value is an array
                 if (!Array.isArray(value)) {
-                    throw CreateError(`Could not convert JSON array to model array. Expected an array, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                    throw CreateError(`Could not convert JSON array to model array. Expected an array, got: ${value}.`, ErrorTypes.TransformerHandlingInvalidInput);
                 }
 
                 const models: any[] = [];
@@ -227,7 +227,7 @@ export class ValueTransformer {
 
                     // make sure the value is an object
                     if (typeof object !== "object") {
-                        throw CreateError(`Could not convert JSON array to model array. Expected an object or null, got: ${object}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                        throw CreateError(`Could not convert JSON array to model array. Expected an object or null, got: ${object}.`, ErrorTypes.TransformerHandlingInvalidInput);
                     }
 
                     // convert the model
@@ -246,7 +246,7 @@ export class ValueTransformer {
 
                 // make sure the value is an array
                 if (!Array.isArray(value)) {
-                    throw CreateError(`Could not convert model array to JSON array. Expected an array, got: ${value}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                    throw CreateError(`Could not convert model array to JSON array. Expected an array, got: ${value}.`, ErrorTypes.TransformerHandlingInvalidInput);
                 }
 
                 const objects: any[] = [];
@@ -260,7 +260,7 @@ export class ValueTransformer {
 
                     // make sure the value is an object
                     if (typeof model !== "object") {
-                        throw CreateError(`Could not convert model array to JSON array. Expected a model or null, got: ${model}.`, MantleErrorTypes.TransformerHandlingInvalidInput);
+                        throw CreateError(`Could not convert model array to JSON array. Expected a model or null, got: ${model}.`, ErrorTypes.TransformerHandlingInvalidInput);
                     }
 
                     // convert the model

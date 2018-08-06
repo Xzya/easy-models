@@ -1,4 +1,4 @@
-export enum MantleErrorTypes {
+export enum ErrorTypes {
     /**
      * classForParsingObject returned null for the given object.
      */

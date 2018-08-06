@@ -1,5 +1,5 @@
 import { ValueTransformer } from "../lib";
-import { MantleErrorTypes } from "../lib/constants";
+import { ErrorTypes } from "../lib/constants";
 
 describe("ValueTransformer", () => {
     it("should return a forward transformer with a block", () => {
@@ -128,7 +128,7 @@ describe("number transformer", () => {
         }
 
         expect(error).toBeDefined();
-        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+        expect(error.name).toEqual(ErrorTypes.TransformerHandlingInvalidInput);
     });
 
     it("should throw error on invalid reverse transform value", () => {
@@ -141,7 +141,7 @@ describe("number transformer", () => {
         }
 
         expect(error).toBeDefined();
-        expect(error.name).toEqual(MantleErrorTypes.TransformerHandlingInvalidInput);
+        expect(error.name).toEqual(ErrorTypes.TransformerHandlingInvalidInput);
     });
 
     it("should return null on null input", () => {

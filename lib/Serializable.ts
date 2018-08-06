@@ -7,7 +7,7 @@ export type KeyPaths<T> = {
 export type Newable<T> = { new(...args: any[]): T; };
 
 /**
- * This interface defines the minimal that classes need to implement to interact with Mantle adapters.
+ * This interface defines the minimal that classes need to implement to interact with the helpers.
  *
  * It is intended for scenarios where inheriting from Model is not feasible.
  */
@@ -36,7 +36,7 @@ export interface Serializable {
      * Specifies how to convert a JSON value to the given property key. If reversible, the transformer will also be used
      * to convert the property value back to JSON.
      *
-     * If the receiver implements a `<key>JSONTransformer` method, JSONAdapter will use the result of that method instead.
+     * If the receiver implements a `<key>JSONTransformer` method, the result of that method will be used instead.
      *
      * Returns a value transformer, or undefined if no transformation should be performed.
      *
