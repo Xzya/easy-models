@@ -5,9 +5,17 @@
 
 `easy-models` makes it easy to write a simple model layer for your JavaScript application. Inspired by [Mantle for iOS](https://github.com/Mantle/Mantle).
 
-## Model
+## Installation
+
+```bash
+npm install --save easy-models
+```
+
+## Usage
 
 ```typescript
+import { Model, KeyPaths, ValueTransformer } from "easy-models";
+
 enum GHIssueState {
     Open = 0,
     Closed,
