@@ -11,6 +11,10 @@
 npm install --save easy-models
 ```
 
+## Documentation
+
+You can find the API reference [here](https://xzya.github.io/easy-models/).
+
 ## Usage
 
 ```typescript
