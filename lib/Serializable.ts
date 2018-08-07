@@ -38,7 +38,7 @@ export interface Serializable {
      *
      * If the receiver implements a `<key>JSONTransformer` method, the result of that method will be used instead.
      *
-     * Returns a value transformer, or undefined if no transformation should be performed.
+     * @returns a value transformer, or undefined if no transformation should be performed.
      *
      * @param key
      */
@@ -50,7 +50,7 @@ export interface Serializable {
      * This is mostly useful for class clusters, where the abstract base class would be passed, but a subclass should be
      * instantiated instead.
      *
-     * Returns the class that should be parsed (which may be the receiver), or undefined to abort parsing (e.g. if the data is invalid).
+     * @returns the class that should be parsed (which may be the receiver), or undefined to abort parsing (e.g. if the data is invalid).
      *
      * @param json
      */

@@ -1,5 +1,6 @@
 node_modules/
 .coverage/
+doc/
 lib/
 __tests__/
 gulpfile.js

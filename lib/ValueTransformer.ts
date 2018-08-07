@@ -7,7 +7,7 @@ import { ModelFromObject, ObjectFromModel } from "./JSONAdapter";
 /**
  * A function that represents a transformation.
  *
- * Returns the result of the transformation, which may be null or undefined.
+ * @returns the result of the transformation, which may be null or undefined.
  */
 export type ValueTransformerFunction = (value: any) => any;
 
@@ -50,7 +50,7 @@ export class ValueTransformer {
     }
 
     /**
-     * Returns true if the transformer supports reverse transformations.
+     * @returns `true` if the transformer supports reverse transformations.
      */
     public allowsReverseTransformation(): boolean {
         return this.reverse != null;
@@ -60,7 +60,7 @@ export class ValueTransformer {
      * Flips the direction of the receiver's transformation, such that `transformedValue` will
      * become `reverseTransformedValue`, and vice-versa.
      *
-     * Returns an inverted transformer.
+     * @returns an inverted transformer.
      */
     public invertedTransformer(): ValueTransformer {
         return ValueTransformer.forwardAndReversible(
@@ -74,7 +74,7 @@ export class ValueTransformer {
     }
 
     /**
-     * Returns a transformer which transforms values using the given function. Reverse transformation will not be
+     * @returns a transformer which transforms values using the given function. Reverse transformation will not be
      * allowed.
      *
      * @param transformation
@@ -84,7 +84,7 @@ export class ValueTransformer {
     }
 
     /**
-     * Returns a transformer which transforms values using the given function, for forward or reverse transformations.
+     * @returns a transformer which transforms values using the given function, for forward or reverse transformations.
      *
      * @param transformation
      */
@@ -93,7 +93,7 @@ export class ValueTransformer {
     }
 
     /**
-     * Returns a transformer which transforms values using the given functions.
+     * @returns a transformer which transforms values using the given functions.
      *
      * @param forward
      * @param reverse
@@ -135,7 +135,7 @@ export class ValueTransformer {
     /**
      * A reversible value transformer to transform between a number and it's string representation.
      *
-     * Returns a transformer which will map from strings to numbers for forward transformations, and
+     * @returns a transformer which will map from strings to numbers for forward transformations, and
      * from numbers to strings for reverse transformations.
      *
      * @param locales A locale string or array of locale strings that contain one or more language or locale tags.
