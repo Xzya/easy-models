@@ -32,6 +32,25 @@ export class Model extends Serializable {
     }
 
     /**
+     * Initializes a model with the given object.
+     *
+     * @param json An object.
+     */
+    public static create<T extends Model>(this: Newable<T>, json: Partial<T>): T {
+        const model = new this();
+
+        if (json && typeof json === "object") {
+            for (const key of Object.keys(json)) {
+                const value = json[key];
+
+                model[key] = value;
+            }
+        }
+
+        return model;
+    }
+
+    /**
      * By default, this method looks for a `merge<Key>FromModel` method on the receiver,
      * and invokes it if found. If not found, and `model` is not null, the value for the
      * given key is taken from `model`.

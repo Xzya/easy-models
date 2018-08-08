@@ -78,7 +78,6 @@ describe("JSONAdapter", () => {
         expect(model.toJSON()).toEqual(values);
     });
 
-
     it("should initialize without returning any error when using a JSON with null as value", () => {
         const values = {
             "username": "foo",
@@ -114,7 +113,6 @@ describe("JSONAdapter", () => {
         expect(model.count).toEqual(2);
         expect(model.nestedName).toEqual("bar");
     });
-
 
     it("should fail to initialize if JSON transformer fails", () => {
         const values = {
@@ -241,9 +239,6 @@ describe("JSONAdapter", () => {
         expect(error.name).toEqual(ErrorTypes.JSONAdapterNoClassFound);
     });
 
-
-
-
     it("should ignore invalid transformers", () => {
         const values = {
             "foo": "foo",
@@ -339,11 +334,13 @@ it("should return null if it fails to parse any model from an array", () => {
 });
 
 describe("serialize array of objects from models", () => {
-    const model1 = new TestModel();
-    model1.name = "foo";
+    const model1 = TestModel.create({
+        name: "foo",
+    });
 
-    const model2 = new TestModel();
-    model2.name = "bar";
+    const model2 = TestModel.create({
+        name: "bar",
+    });
 
     it("should return an array of objects from models", () => {
         const objects = TestModel.toArray([model1, model2]);

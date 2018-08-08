@@ -3,13 +3,15 @@ import { TestModel, SubclassTestModel } from "./TestModel";
 describe("Model", () => {
     describe("merging", () => {
         it("should merge two models together", () => {
-            const target = new TestModel();
-            target.name = "foo";
-            target.count = 5;
+            const target = TestModel.create({
+                name: "foo",
+                count: 5,
+            });
 
-            const source = new TestModel();
-            source.name = "bar";
-            source.count = 3;
+            const source = TestModel.create({
+                name: "bar",
+                count: 3,
+            });
 
             target.mergeValues(source);
 
@@ -18,8 +20,9 @@ describe("Model", () => {
         });
 
         it("should not modify values when merging null", () => {
-            const target = new TestModel();
-            target.name = "foo";
+            const target = TestModel.create({
+                name: "foo",
+            });
 
             target.mergeValue("name", null);
 
@@ -35,15 +38,17 @@ describe("Model", () => {
             let subclass: SubclassTestModel;
 
             beforeEach(() => {
-                superclass = new TestModel();
-                superclass.name = "foo";
-                superclass.count = 5;
+                superclass = TestModel.create({
+                    name: "foo",
+                    count: 5,
+                });
 
-                subclass = new SubclassTestModel();
-                subclass.name = "bar";
-                subclass.count = 3;
-                subclass.generation = 1;
-                subclass.role = "subclass";
+                subclass = SubclassTestModel.create({
+                    name: "bar",
+                    count: 3,
+                    generation: 1,
+                    role: "subclass",
+                });
             });
 
             it("should merge from subclass model", () => {
