@@ -40,7 +40,7 @@ export interface Serializable {
      *
      * @returns a value transformer, or undefined if no transformation should be performed.
      *
-     * @param key
+     * @param key the name of the property.
      */
     JSONTransformerForKey?(key: string): ValueTransformer | undefined;
 
@@ -52,7 +52,7 @@ export interface Serializable {
      *
      * @returns the class that should be parsed (which may be the receiver), or undefined to abort parsing (e.g. if the data is invalid).
      *
-     * @param json
+     * @param json object to check the class for.
      */
     classForParsingObject?<T extends Serializable>(json: any): Newable<T>;
 }

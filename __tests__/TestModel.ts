@@ -55,6 +55,19 @@ export class TestModel extends Model {
             },
         );
     }
+
+    /**
+     * Merging
+     */
+
+    public mergeCountFromModel<T extends TestModel>(model: T): void {
+        this.count += model.count;
+    }
+}
+
+export class SubclassTestModel extends TestModel {
+    public role: string;
+    public generation: number;
 }
 
 interface Coordinate {
