@@ -913,6 +913,12 @@ img { max-width: 100%; }
 		<li class="current tsd-kind-class">
 			<a href="model.html" class="tsd-kind-icon">Model</a>
 			<ul>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+					<a href="model.html#mergevalue" class="tsd-kind-icon">merge<wbr>Value</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+					<a href="model.html#mergevalues" class="tsd-kind-icon">merge<wbr>Values</a>
+				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="model.html#tojson" class="tsd-kind-icon">toJSON</a>
 				</li>
@@ -927,6 +933,9 @@ img { max-width: 100%; }
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-static">
 					<a href="model.html#classforparsingobject" class="tsd-kind-icon">class<wbr>For<wbr>Parsing<wbr>Object</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
+					<a href="model.html#create" class="tsd-kind-icon">create</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
 					<a href="model.html#from" class="tsd-kind-icon">from</a>
@@ -996,11 +1005,14 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="model.html#mergevalue" class="tsd-kind-icon">merge<wbr>Value</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="model.html#mergevalues" class="tsd-kind-icon">merge<wbr>Values</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="model.html#tojson" class="tsd-kind-icon">toJSON</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="model.html#toobject" class="tsd-kind-icon">to<wbr>Object</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="model.html#jsonkeypaths" class="tsd-kind-icon">JSONKey<wbr>Paths</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="model.html#jsontransformerforkey" class="tsd-kind-icon">JSONTransformer<wbr>For<wbr>Key</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-static"><a href="model.html#classforparsingobject" class="tsd-kind-icon">class<wbr>For<wbr>Parsing<wbr>Object</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static"><a href="model.html#create" class="tsd-kind-icon">create</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static"><a href="model.html#from" class="tsd-kind-icon">from</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static"><a href="model.html#fromarray" class="tsd-kind-icon">from<wbr>Array</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static"><a href="model.html#toarray" class="tsd-kind-icon">to<wbr>Array</a></li>
@@ -1011,6 +1023,89 @@ img { max-width: 100%; }
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Methods</h2>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<a name="mergevalue" class="tsd-anchor"></a>
+				<h3>merge<wbr>Value</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+					<li class="tsd-signature tsd-kind-icon">merge<wbr>Value&lt;T&gt;<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">keyof T</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">string</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Model.ts#L61">Model.ts:61</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>By default, this method looks for a <code>merge&lt;Key&gt;FromModel</code> method on the receiver,
+									and invokes it if found. If not found, and <code>model</code> is not null, the value for the
+								given key is taken from <code>model</code>.</p>
+							</div>
+						</div>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>T<span class="tsd-signature-symbol">: </span><a href="model.html" class="tsd-signature-type">Model</a></h4>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>key: <span class="tsd-signature-type">keyof T</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>the name of the property to merge.</p>
+								</div>
+							</li>
+							<li>
+								<h5>model: <span class="tsd-signature-type">T</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>the model to merge from.</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<a name="mergevalues" class="tsd-anchor"></a>
+				<h3>merge<wbr>Values</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+					<li class="tsd-signature tsd-kind-icon">merge<wbr>Values&lt;T&gt;<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Model.ts#L89">Model.ts:89</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Merges the values of the given model into the receiver, using <code>mergeValue</code> for each
+								key in <code>JSONKeyPaths</code>.</p>
+							</div>
+						</div>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>T<span class="tsd-signature-symbol">: </span><a href="model.html" class="tsd-signature-type">Model</a></h4>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>model: <span class="tsd-signature-type">T</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>the model to merge from.</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="tojson" class="tsd-anchor"></a>
 				<h3>toJSON</h3>
@@ -1021,7 +1116,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/3d47e2f/lib/Model.ts#L45">Model.ts:45</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Model.ts#L116">Model.ts:116</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1045,7 +1140,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/3d47e2f/lib/Model.ts#L35">Model.ts:35</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Model.ts#L106">Model.ts:106</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1068,7 +1163,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="serializable.html">Serializable</a>.<a href="serializable.html#jsonkeypaths">JSONKeyPaths</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/3d47e2f/lib/Serializable.ts#L33">Serializable.ts:33</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Serializable.ts#L33">Serializable.ts:33</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1107,7 +1202,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="serializable.html">Serializable</a>.<a href="serializable.html#jsontransformerforkey">JSONTransformerForKey</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/3d47e2f/lib/Serializable.ts#L45">Serializable.ts:45</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Serializable.ts#L45">Serializable.ts:45</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1122,6 +1217,7 @@ img { max-width: 100%; }
 							<li>
 								<h5>key: <span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
+									<p>the name of the property.</p>
 								</div>
 							</li>
 						</ul>
@@ -1144,7 +1240,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="serializable.html">Serializable</a>.<a href="serializable.html#classforparsingobject">classForParsingObject</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/3d47e2f/lib/Serializable.ts#L57">Serializable.ts:57</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Serializable.ts#L57">Serializable.ts:57</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1165,11 +1261,52 @@ img { max-width: 100%; }
 							<li>
 								<h5>json: <span class="tsd-signature-type">any</span></h5>
 								<div class="tsd-comment tsd-typography">
+									<p>object to check the class for.</p>
 								</div>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="../globals.html#newable" class="tsd-signature-type">Newable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						<p>the class that should be parsed (which may be the receiver), or undefined to abort parsing (e.g. if the data is invalid).</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
+				<a name="create" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> create</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">create&lt;T&gt;<span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="../globals.html#newable" class="tsd-signature-type">Newable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, json<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Model.ts#L39">Model.ts:39</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Initializes a model with the given object.</p>
+							</div>
+						</div>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>T<span class="tsd-signature-symbol">: </span><a href="model.html" class="tsd-signature-type">Model</a></h4>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>this: <a href="../globals.html#newable" class="tsd-signature-type">Newable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+							</li>
+							<li>
+								<h5>json: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>An object.</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1183,7 +1320,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/3d47e2f/lib/Model.ts#L10">Model.ts:10</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Model.ts#L12">Model.ts:12</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1226,7 +1363,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/3d47e2f/lib/Model.ts#L19">Model.ts:19</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Model.ts#L21">Model.ts:21</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1269,7 +1406,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/3d47e2f/lib/Model.ts#L28">Model.ts:28</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Model.ts#L30">Model.ts:30</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
