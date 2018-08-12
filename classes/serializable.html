@@ -966,7 +966,7 @@ img { max-width: 100%; }
 				<div class="lead">
 					<p>This interface defines the minimal that classes need to implement to interact with the helpers.</p>
 				</div>
-				<p>It is intended for scenarios where inheriting from Model is not feasible.</p>
+				<p>It is intended for scenarios where inheriting from <a href="model.html">Model</a> is not feasible.</p>
 			</div>
 		</section>
 		<section class="tsd-panel tsd-hierarchy">
@@ -1009,7 +1009,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Serializable.ts#L33">Serializable.ts:33</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/d097038/lib/Serializable.ts#L35">Serializable.ts:35</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1019,14 +1019,19 @@ img { max-width: 100%; }
 							<p>Values in the object can either be key paths in the JSON representation of the receiver or an array of such key
 							paths. If an array is used, the deserialized value will be an object containing all of the keys in the array.</p>
 							<p>Any keys omitted will not participate in JSON serialization.</p>
-							<p>Examples</p>
-							<p>JSONKeyPaths() {
-								return {
-								&quot;name&quot;: &quot;POI.name&quot;,
-								&quot;point&quot;: [&quot;latitude&quot;, &quot;longitude&quot;],
-								&quot;starred&quot;: &quot;starred&quot;,
-								};
-							}</p>
+							<dl class="tsd-comment-tags">
+								<dt>example</dt>
+								<dd><pre><code class="lang-typescript">
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> JSONKeyPaths() {
+    <span class="hljs-keyword">return</span> {
+        name: <span class="hljs-string">"POI.name"</span>,
+        point: [<span class="hljs-string">"latitude"</span>, <span class="hljs-string">"longitude"</span>],
+        starred: <span class="hljs-string">"starred"</span>,
+    };
+}
+</code></pre>
+								</dd>
+							</dl>
 						</div>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
 						<ul class="tsd-parameters">
@@ -1047,7 +1052,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Serializable.ts#L45">Serializable.ts:45</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/d097038/lib/Serializable.ts#L47">Serializable.ts:47</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1084,7 +1089,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Serializable.ts#L57">Serializable.ts:57</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/d097038/lib/Serializable.ts#L59">Serializable.ts:59</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">

@@ -961,6 +961,54 @@ img { max-width: 100%; }
 			<h2 id="documentation">Documentation</h2>
 			<p>You can find the API reference <a href="https://xzya.github.io/easy-models/">here</a>.</p>
 			<h2 id="usage">Usage</h2>
+			<p>Let&#39;s use the <a href="http://developer.github.com/">GitHub API</a> for demonstration.</p>
+			<h3 id="the-typical-model-object">The typical model object</h3>
+			<p>This is how you would typically represent a <a href="https://developer.github.com/v3/issues/#get-a-single-issue">GitHub issue</a>:</p>
+			<pre><code class="lang-typescript"><span class="hljs-keyword">class</span> GHIssue {
+    <span class="hljs-keyword">public</span> readonly url: <span class="hljs-built_in">string</span>;
+    <span class="hljs-keyword">public</span> readonly htmlUrl: <span class="hljs-built_in">string</span>;
+    <span class="hljs-keyword">public</span> readonly <span class="hljs-built_in">number</span>: <span class="hljs-built_in">number</span>;
+    <span class="hljs-keyword">public</span> readonly state: GHIssueState;
+    <span class="hljs-keyword">public</span> readonly reporterLogin: <span class="hljs-built_in">string</span>;
+    <span class="hljs-keyword">public</span> readonly assignee: GHUser;
+    <span class="hljs-keyword">public</span> readonly assignees: GHUser[];
+    <span class="hljs-keyword">public</span> readonly updatedAt: <span class="hljs-built_in">Date</span>;
+
+    <span class="hljs-keyword">public</span> title: <span class="hljs-built_in">string</span>;
+    <span class="hljs-keyword">public</span> body: <span class="hljs-built_in">string</span>;
+
+    <span class="hljs-keyword">public</span> retrievedAt: <span class="hljs-built_in">Date</span>;
+
+    <span class="hljs-keyword">constructor</span>(<span class="hljs-params">json: <span class="hljs-built_in">any</span></span>) {
+        <span class="hljs-keyword">this</span>.url = json.url;
+        <span class="hljs-keyword">this</span>.htmlUrl = json.html_url;
+        <span class="hljs-keyword">this</span>.number = json.number;
+
+        <span class="hljs-keyword">if</span> (json.state === <span class="hljs-string">"open"</span>) {
+            <span class="hljs-keyword">this</span>.state = GHIssueState.Open;
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (json.state === <span class="hljs-string">"closed"</span>) {
+            <span class="hljs-keyword">this</span>.state = GHIssueState.Closed;
+        }
+
+        <span class="hljs-keyword">this</span>.title = json.title;
+        <span class="hljs-keyword">this</span>.body = json.body;
+        <span class="hljs-keyword">this</span>.reporterLogin = json.user.login;
+        <span class="hljs-keyword">this</span>.updatedAt = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(json.updated_at);
+        <span class="hljs-keyword">this</span>.assignee = <span class="hljs-keyword">new</span> GHUser(json.assignee);
+
+        <span class="hljs-keyword">const</span> assignees: GHUser[] = [];
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> assigneeJSON of json.assignees) {
+            <span class="hljs-keyword">const</span> assignee = <span class="hljs-keyword">new</span> GHUser(assigneeJSON);
+            assignees.push(assignee);
+        }
+        <span class="hljs-keyword">this</span>.assignees = assignees;
+
+        <span class="hljs-keyword">this</span>.retrievedAt = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>();
+    }
+}
+</code></pre>
+			<h3 id="same-model-by-extending-model">Same model by extending <code>Model</code></h3>
+			<p>This is how you would represent the same model object by extending <code>Model</code>:</p>
 			<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { Model, KeyPaths, ValueTransformer } <span class="hljs-keyword">from</span> <span class="hljs-string">"easy-models"</span>;
 
 <span class="hljs-keyword">enum</span> GHIssueState {
@@ -1031,6 +1079,20 @@ img { max-width: 100%; }
     }
 }
 </code></pre>
+			<h3 id="advantages-of-using-model-over-the-typical-aproach">Advantages of using <code>Model</code> over the typical aproach</h3>
+			<ul>
+				<li>Turn a model <em>back</em> into JSON.</li>
+			</ul>
+			<p>You can define the key mapping between your model and the JSON using the <code>JSONKeyPaths</code> method.</p>
+			<p>By default, turning a model back into JSON will map the values into the original keys. If your data needs transformation, you can define custom reversible transformers for each field, which will be used when turning the data to/from JSON (as seen for the <code>updatedAt</code> field above).</p>
+			<ul>
+				<li>Update a model with new data from the server.</li>
+			</ul>
+			<p><code>Model</code> has an extensible <code>mergeValues</code> method, which makes it easy to specify how new model data should be integrated.</p>
+			<ul>
+				<li>Validate models.</li>
+			</ul>
+			<p><code>Model</code> allows you to define validation methods for each field, which will be automatically called when you deserialize a model.</p>
 			<h2 id="serializable">Serializable</h2>
 			<p>In order to serialize your model objects from or into JSON, you need to extend <code>Serializable</code> in your model class.</p>
 			<p>While extending <code>Model</code> is not required, it gives you some helper functions, which makes it a bit easier to work with.</p>
@@ -1219,7 +1281,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Key<wbr>Paths<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Serializable.ts#L3">Serializable.ts:3</a></li>
+						<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/d097038/lib/Serializable.ts#L3">Serializable.ts:3</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1234,7 +1296,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Newable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Serializable.ts#L7">Serializable.ts:7</a></li>
+						<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/d097038/lib/Serializable.ts#L7">Serializable.ts:7</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1249,7 +1311,7 @@ img { max-width: 100%; }
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/Serializable.ts#L7">Serializable.ts:7</a></li>
+											<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/d097038/lib/Serializable.ts#L7">Serializable.ts:7</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1270,7 +1332,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Value<wbr>Transformer<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/ValueTransformer.ts#L12">ValueTransformer.ts:12</a></li>
+						<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/d097038/lib/ValueTransformer.ts#L12">ValueTransformer.ts:12</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1311,7 +1373,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Value<wbr>Transformer<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/JSONAdapter.ts#L8">JSONAdapter.ts:8</a></li>
+						<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/d097038/lib/JSONAdapter.ts#L8">JSONAdapter.ts:8</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1336,7 +1398,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/JSONAdapter.ts#L198">JSONAdapter.ts:198</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/d097038/lib/JSONAdapter.ts#L211">JSONAdapter.ts:211</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1376,13 +1438,15 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/JSONAdapter.ts#L63">JSONAdapter.ts:63</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/d097038/lib/JSONAdapter.ts#L66">JSONAdapter.ts:66</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
 								<p>Deserializes a model from an object.</p>
 							</div>
+							<p>It will also call <a href="classes/model.html#validate">Model.validate</a> on the model (if it extends <a href="classes/model.html">Model</a>) and consider it
+							an error if the validation fails.</p>
 						</div>
 						<h4 class="tsd-type-parameters-title">Type parameters</h4>
 						<ul class="tsd-type-parameters">
@@ -1422,7 +1486,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/JSONAdapter.ts#L127">JSONAdapter.ts:127</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/d097038/lib/JSONAdapter.ts#L140">JSONAdapter.ts:140</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1468,7 +1532,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/JSONAdapter.ts#L154">JSONAdapter.ts:154</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/d097038/lib/JSONAdapter.ts#L167">JSONAdapter.ts:167</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1505,7 +1569,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/2ff3646/lib/JSONAdapter.ts#L17">JSONAdapter.ts:17</a></li>
+								<li>Defined in <a href="https://github.com/Xzya/easy-models/blob/d097038/lib/JSONAdapter.ts#L17">JSONAdapter.ts:17</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
