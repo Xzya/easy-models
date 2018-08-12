@@ -1,7 +1,7 @@
-import { Serializable } from "../lib";
+import { Serializable, ObjectFromModel, ModelFromObject } from "../lib";
 import {
     TestModel, MultiKeypathModel, URLModel, SubstitutingTestModel, ChocolateClassClusterModel, StrawberryClassClusterModel,
-    RecursiveGroupModel, URLSubclassModel, URL, HostedURLsModel, DefaultValuesModel, ClassClusterModel, InvalidTransformersModel,
+    RecursiveGroupModel, URLSubclassModel, URL, HostedURLsModel, DefaultValuesModel, ClassClusterModel, InvalidTransformersModel, TestModelNameTooLongError, ValidationModel, TestModelNameMissingError, ConformingModel,
 } from "./TestModel";
 import { ErrorTypes } from "../lib/constants";
 
@@ -112,6 +112,25 @@ describe("JSONAdapter", () => {
         expect(model.name).toEqual("buzz");
         expect(model.count).toEqual(2);
         expect(model.nestedName).toEqual("bar");
+    });
+
+    it("should fail to initialize if JSON dictionary validation fails", () => {
+        const values = {
+            "username": "this name is too long",
+        };
+
+        let model: TestModel;
+        let error: Error;
+
+        try {
+            model = TestModel.from(values);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(model).toBeUndefined();
+        expect(error).toBeDefined();
+        expect(error.name).toEqual(TestModelNameTooLongError);
     });
 
     it("should fail to initialize if JSON transformer fails", () => {
@@ -239,6 +258,21 @@ describe("JSONAdapter", () => {
         expect(error.name).toEqual(ErrorTypes.JSONAdapterNoClassFound);
     });
 
+    it("should validate models", () => {
+        let model: ValidationModel;
+        let error: Error;
+
+        try {
+            model = ValidationModel.from({});
+        } catch (err) {
+            error = err;
+        }
+
+        expect(model).toBeUndefined();
+        expect(error).toBeDefined();
+        expect(error.name).toEqual(TestModelNameMissingError);
+    });
+
     it("should ignore invalid transformers", () => {
         const values = {
             "foo": "foo",
@@ -250,6 +284,25 @@ describe("JSONAdapter", () => {
         expect(model).toBeDefined();
         expect(model.foo).toEqual("foo");
         expect(model.bar).toEqual("bar");
+    });
+
+    it("should parse model classes not inheriting from Model", () => {
+        const values = {
+            "name": "foo",
+        };
+
+        let model: ConformingModel;
+        let error: Error;
+
+        try {
+            model = ModelFromObject(values, ConformingModel);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).toBeUndefined();
+        expect(model).toBeDefined();
+        expect(model.name).toEqual("foo");
     });
 });
 

@@ -1,5 +1,8 @@
 import { Serializable, ValueTransformer, KeyPaths, Model, Newable } from "../lib";
 
+export const TestModelNameTooLongError = "TestModelNameTooLongError";
+export const TestModelNameMissingError = "TestModelNameMissingError";
+
 export class TestModel extends Model {
     /**
      * Must be less than 10 characters.
@@ -63,6 +66,33 @@ export class TestModel extends Model {
     public mergeCountFromModel<T extends TestModel>(model: T): void {
         this.count += model.count;
     }
+
+    /**
+     * Validation
+     */
+
+    public validateName(): boolean {
+        if (this.name == null) {
+            return true;
+        }
+
+        if (this.name.length < 10) {
+            return true;
+        }
+
+        const error = new Error(`Expected name to be under 10 characters, got: ${this.name}`);
+        error.name = TestModelNameTooLongError;
+
+        throw error;
+    }
+
+    public validateCount(): boolean {
+        if (this.count < 10) {
+            return true;
+        }
+
+        return false;
+    }
 }
 
 export class SubclassTestModel extends TestModel {
@@ -113,6 +143,46 @@ export class MultiKeypathModel extends Model {
                 };
             },
         );
+    }
+}
+
+export class ValidationModel extends Model {
+    /**
+     * Defaults to null, which is not considered valid.
+     */
+    public name: string = null;
+
+    public static JSONKeyPaths(): KeyPaths<ValidationModel> {
+        return {
+            name: "name",
+        };
+    }
+
+    public validateName(): boolean {
+        if (this.name != null) {
+            return true;
+        }
+
+        const error = new Error("Expected name to not be null");
+        error.name = TestModelNameMissingError;
+
+        throw error;
+    }
+}
+
+/**
+ * Sets the name to "foobar" when `validateName` is invoked with null name.
+ */
+export class SelfValidatingModel extends ValidationModel {
+    public validateName(): boolean {
+        /* istanbul ignore if */
+        if (this.name != null) {
+            return true;
+        }
+
+        this.name = "foobar";
+
+        return true;
     }
 }
 
@@ -187,6 +257,19 @@ export class URLSubclassModel extends URLModel {
         if (key === "otherUrl") {
             return URLModel.urlJSONTransformer();
         }
+    }
+}
+
+/**
+ * Conforms to {@link Serializable} but does not inherit from the {@link Model} class.
+ */
+export class ConformingModel extends Serializable {
+    public name: string;
+
+    public static JSONKeyPaths(): KeyPaths<ConformingModel> {
+        return {
+            name: "name",
+        };
     }
 }
 

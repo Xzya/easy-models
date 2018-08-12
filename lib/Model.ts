@@ -36,7 +36,7 @@ export class Model extends Serializable {
      *
      * @param json An object.
      */
-    public static create<T extends Model>(this: Newable<T>, json: Partial<T>): T {
+    public static create<T extends Model>(this: Newable<T>, json: Partial<T>): T | null {
         const model = new this();
 
         if (json && typeof json === "object") {
@@ -47,7 +47,11 @@ export class Model extends Serializable {
             }
         }
 
-        return model;
+        if (model.validate()) {
+            return model;
+        }
+
+        return null;
     }
 
     /**
@@ -63,7 +67,7 @@ export class Model extends Serializable {
         const methodName = `merge${key.replace(/\w/, (c) => c.toUpperCase())}FromModel`;
 
         // check if the object has a transformer for this property
-        const method = get(this, methodName);
+        const method: (model: T) => void = get(this, methodName);
         const isFunction = typeof method === "function";
 
         // if we haven't found the merge<Key>FromModel method
@@ -98,6 +102,40 @@ export class Model extends Serializable {
         for (const key of Object.keys(keyPaths)) {
             this.mergeValue(key as any, model);
         }
+    }
+
+    /**
+     * Validates the model.
+     *
+     * The default implementation simply invokes `validate<Key>` for all keys in {@link Serializable.JSONKeyPaths}.
+     *
+     * @returns `true` if the model is valid, `false` otherwise.
+     */
+    public validate(): boolean {
+        // get the class of the model
+        const Class = this.constructor;
+
+        // get the key paths
+        const keyPaths = Class.prototype.constructor.JSONKeyPaths();
+
+        for (const key of Object.keys(keyPaths)) {
+            // construct the method name of this property
+            const methodName = `validate${key.replace(/\w/, (c) => c.toUpperCase())}`;
+
+            // check if the object has a validator for this property
+            const method: () => boolean = get(this, methodName);
+            const isFunction = typeof method === "function";
+
+            // if we found the validate<Key> method
+            if (method && isFunction && method.length === 0) {
+                const valid = method.bind(this)() as boolean;
+                if (!valid) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**

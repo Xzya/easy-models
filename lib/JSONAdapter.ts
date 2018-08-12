@@ -25,12 +25,12 @@ function valueTransformersForModel<T extends Serializable>(Class: Newable<T>): V
         const methodName = `${key}JSONTransformer`;
 
         // check if the object has a transformer for this property
-        const method = get(Class, methodName);
+        const method: () => ValueTransformer = get(Class, methodName);
         const isFunction = typeof method === "function";
 
         // if we found the <key>JSONTransformer method
-        if (method && isFunction) {
-            const transformer = method() as ValueTransformer;
+        if (method && isFunction && method.length === 0) {
+            const transformer = method();
 
             if (transformer) {
                 result[key] = transformer;
@@ -56,6 +56,9 @@ function valueTransformersForModel<T extends Serializable>(Class: Newable<T>): V
 
 /**
  * Deserializes a model from an object.
+ *
+ * It will also call {@link Model.validate} on the model (if it extends {@link Model}) and consider it
+ * an error if the validation fails.
  *
  * @param json An object.
  * @param Class The model to use for JSON serialization
@@ -113,6 +116,16 @@ export function ModelFromObject<T extends Serializable>(json: any, Class: Newabl
         }
 
         set(model, key, value);
+    }
+
+    // check if the model has a validation method (extends Model)
+    const method: () => boolean = get(model, "validate");
+    const isFunction = typeof method === "function";
+
+    // if we found the method
+    if (method && isFunction && method.length === 0) {
+        // call it and return the model if it is valid, null otherwise
+        return method.bind(model)() ? model : null;
     }
 
     return model;

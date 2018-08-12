@@ -1,4 +1,4 @@
-import { TestModel, SubclassTestModel } from "./TestModel";
+import { TestModel, SubclassTestModel, ValidationModel, TestModelNameMissingError, SelfValidatingModel } from "./TestModel";
 
 describe("Model", () => {
     describe("merging", () => {
@@ -66,6 +66,71 @@ describe("Model", () => {
                 expect(subclass.generation).toEqual(1);
                 expect(subclass.role).toEqual("subclass");
             });
+        });
+    });
+
+    describe("validation", () => {
+        it("should fail with incorrect values", () => {
+            let model: ValidationModel;
+            let error: Error;
+
+            try {
+                model = ValidationModel.create({});
+            } catch (err) {
+                error = err;
+            }
+
+            expect(model).toBeUndefined();
+            expect(error).toBeDefined();
+            expect(error.name).toEqual(TestModelNameMissingError);
+        });
+
+        it("should fail without error on invalid count", () => {
+            let model: TestModel;
+            let error: Error;
+
+            try {
+                model = TestModel.create({
+                    count: 11,
+                });
+            } catch (err) {
+                error = err;
+            }
+
+            expect(error).toBeUndefined();
+            expect(model).toBeNull();
+        });
+
+        it("should succeed with correct values", () => {
+            let model: ValidationModel;
+            let error: Error;
+
+            try {
+                model = ValidationModel.create({
+                    name: "valid",
+                });
+            } catch (err) {
+                error = err;
+            }
+
+            expect(error).toBeUndefined();
+            expect(model).toBeDefined();
+            expect(model.name).toEqual("valid");
+        });
+
+        it("should autovalidate name", () => {
+            let model: SelfValidatingModel;
+            let error: Error;
+
+            try {
+                model = SelfValidatingModel.create({});
+            } catch (err) {
+                error = err;
+            }
+
+            expect(error).toBeUndefined();
+            expect(model).toBeDefined();
+            expect(model.name).toEqual("foobar");
         });
     });
 });
