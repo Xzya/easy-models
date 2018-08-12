@@ -1,4 +1,3 @@
-import get = require("lodash.get");
 import set = require("lodash.set");
 import { Serializable, Newable } from "./Serializable";
 import { ModelFromObject, ObjectFromModel, ModelsFromArray, ArrayFromModels } from "./JSONAdapter";
@@ -64,10 +63,10 @@ export class Model extends Serializable {
      */
     public mergeValue<T extends Model>(key: keyof T & string, model: T): void {
         // construct the method name for this key
-        const methodName = `merge${key.replace(/\w/, (c) => c.toUpperCase())}FromModel`;
+        const methodName = `merge${key.charAt(0).toUpperCase()}${key.slice(1)}FromModel`;
 
         // check if the object has a transformer for this property
-        const method: (model: T) => void = get(this, methodName);
+        const method: (model: T) => void = this[methodName];
         const isFunction = typeof method === "function";
 
         // if we haven't found the merge<Key>FromModel method
@@ -120,10 +119,10 @@ export class Model extends Serializable {
 
         for (const key of Object.keys(keyPaths)) {
             // construct the method name of this property
-            const methodName = `validate${key.replace(/\w/, (c) => c.toUpperCase())}`;
+            const methodName = `validate${key.charAt(0).toUpperCase()}${key.slice(1)}`;
 
             // check if the object has a validator for this property
-            const method: () => boolean = get(this, methodName);
+            const method: () => boolean = this[methodName];
             const isFunction = typeof method === "function";
 
             // if we found the validate<Key> method

@@ -25,7 +25,7 @@ function valueTransformersForModel<T extends Serializable>(Class: Newable<T>): V
         const methodName = `${key}JSONTransformer`;
 
         // check if the object has a transformer for this property
-        const method: () => ValueTransformer = get(Class, methodName);
+        const method: () => ValueTransformer = Class[methodName];
         const isFunction = typeof method === "function";
 
         // if we found the <key>JSONTransformer method
@@ -119,7 +119,7 @@ export function ModelFromObject<T extends Serializable>(json: any, Class: Newabl
     }
 
     // check if the model has a validation method (extends Model)
-    const method: () => boolean = get(model, "validate");
+    const method: () => boolean = (model as any).validate;
     const isFunction = typeof method === "function";
 
     // if we found the method
@@ -177,7 +177,7 @@ export function ObjectFromModel<T extends Serializable>(model: T): any {
     for (const key of Object.keys(jsonKeyPaths)) {
         const keyPath = jsonKeyPaths[key];
 
-        const value = get(model, key);
+        const value = model[key];
 
         const transformer = transformers[key];
 
