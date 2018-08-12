@@ -9,7 +9,7 @@ export type Newable<T> = { new(...args: any[]): T; };
 /**
  * This interface defines the minimal that classes need to implement to interact with the helpers.
  *
- * It is intended for scenarios where inheriting from Model is not feasible.
+ * It is intended for scenarios where inheriting from {@link Model} is not feasible.
  */
 export interface Serializable {
     /**
@@ -20,15 +20,17 @@ export interface Serializable {
      *
      * Any keys omitted will not participate in JSON serialization.
      *
-     * Examples
+     * @example
+     * ```typescript
      *
-     * JSONKeyPaths() {
+     * public static JSONKeyPaths() {
      *     return {
-     *         "name": "POI.name",
-     *         "point": ["latitude", "longitude"],
-     *         "starred": "starred",
+     *         name: "POI.name",
+     *         point: ["latitude", "longitude"],
+     *         starred: "starred",
      *     };
      * }
+     * ```
      */
     JSONKeyPaths(): { [key: string]: string | string[] };
 

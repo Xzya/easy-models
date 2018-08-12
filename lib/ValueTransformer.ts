@@ -175,7 +175,7 @@ export class ValueTransformer {
     }
 
     /**
-     * Creates a reversible transformer to convert an object into a Model object, and vice-versa.
+     * Creates a reversible transformer to convert an object into a {@link Model} object, and vice-versa.
      *
      * @param Class The Model subclass to attempt to parse from the JSON.
      */
@@ -200,7 +200,7 @@ export class ValueTransformer {
     }
 
     /**
-     * Creates a reversible transformer to convert an array of objects into an array of Model
+     * Creates a reversible transformer to convert an array of objects into an array of {@link Model}
      * objects, and vice-versa.
      *
      * @param Class The Model subclass to attempt to parse from each JSON object.

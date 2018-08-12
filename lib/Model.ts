@@ -85,8 +85,8 @@ export class Model extends Serializable {
     }
 
     /**
-     * Merges the values of the given model into the receiver, using `mergeValue` for each
-     * key in `JSONKeyPaths`.
+     * Merges the values of the given model into the receiver, using {@link Model.mergeValue} for each
+     * key in {@link Serializable.JSONKeyPaths}.
      *
      * @param model the model to merge from.
      */
@@ -149,7 +149,7 @@ export class Model extends Serializable {
      * Serializes a model into an object.
      *
      * Note: This does not throw the error if it occurs during serialization.
-     * Check `toObject` if you need that.
+     * Check {@link Model.toObject} if you need that.
      */
     public toJSON(): any {
         try {

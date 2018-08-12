@@ -31,9 +31,9 @@ export class TestModel extends Model {
 
     public static JSONKeyPaths(): KeyPaths<TestModel> {
         return {
-            "name": "username",
-            "count": "count",
-            "nestedName": "nested.name",
+            name: "username",
+            count: "count",
+            nestedName: "nested.name",
         };
     }
 
@@ -119,8 +119,8 @@ export class MultiKeypathModel extends Model {
 
     public static JSONKeyPaths(): KeyPaths<MultiKeypathModel> {
         return {
-            "location": ["latitude", "longitude"],
-            "nestedLocation": ["nested.latitude", "nested.longitude"],
+            location: ["latitude", "longitude"],
+            nestedLocation: ["nested.latitude", "nested.longitude"],
         };
     }
 
@@ -214,7 +214,7 @@ export class URLModel extends Model {
 
     public static JSONKeyPaths(): KeyPaths<URLModel> {
         return {
-            "url": "url",
+            url: "url",
         };
     }
 
@@ -248,7 +248,7 @@ export class URLSubclassModel extends URLModel {
     public static JSONKeyPaths(): KeyPaths<URLSubclassModel> {
         return {
             ...super.JSONKeyPaths(),
-            "otherUrl": "otherUrl",
+            otherUrl: "otherUrl",
         };
     }
 
@@ -274,7 +274,7 @@ export class ConformingModel extends Serializable {
 }
 
 /**
- * Parses MTLTestModel objects from JSON instead.
+ * Parses {@link TestModel} objects from JSON instead.
  */
 export class SubstitutingTestModel extends Model {
     /* istanbul ignore next */
@@ -296,7 +296,7 @@ export class ClassClusterModel extends Model {
 
     public static JSONKeyPaths(): KeyPaths<ClassClusterModel> {
         return {
-            "flavor": "flavor",
+            flavor: "flavor",
         };
     }
 
@@ -325,7 +325,7 @@ export class ChocolateClassClusterModel extends ClassClusterModel {
     public static JSONKeyPaths(): KeyPaths<ChocolateClassClusterModel> {
         return {
             ...super.JSONKeyPaths(),
-            "bitterness": "chocolate_bitterness",
+            bitterness: "chocolate_bitterness",
         };
     }
 
@@ -354,7 +354,7 @@ export class StrawberryClassClusterModel extends ClassClusterModel {
     public static JSONKeyPaths(): KeyPaths<StrawberryClassClusterModel> {
         return {
             ...super.JSONKeyPaths(),
-            "freshness": "strawberry_freshness",
+            freshness: "strawberry_freshness",
         };
     }
 }
@@ -365,8 +365,8 @@ export class RecursiveUserModel extends Model {
 
     public static JSONKeyPaths(): KeyPaths<RecursiveUserModel> {
         return {
-            "name": "name_",
-            "groups": "groups_",
+            name: "name_",
+            groups: "groups_",
         };
     }
 
@@ -381,8 +381,8 @@ export class RecursiveGroupModel extends Model {
 
     public static JSONKeyPaths(): KeyPaths<RecursiveGroupModel> {
         return {
-            "owner": "owner_",
-            "users": "users_",
+            owner: "owner_",
+            users: "users_",
         };
     }
 
@@ -400,7 +400,7 @@ export class HostedURLsModel extends Model {
 
     public static JSONKeyPaths(): KeyPaths<HostedURLsModel> {
         return {
-            "urls": "urls",
+            urls: "urls",
         };
     }
 
