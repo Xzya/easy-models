@@ -17,6 +17,61 @@ You can find the API reference [here](https://xzya.github.io/easy-models/).
 
 ## Usage
 
+Let's use the [GitHub API](http://developer.github.com/) for demonstration.
+
+### The typical model object
+
+This is how you would typically represent a [GitHub issue](https://developer.github.com/v3/issues/#get-a-single-issue):
+
+```typescript
+class GHIssue {
+    public readonly url: string;
+    public readonly htmlUrl: string;
+    public readonly number: number;
+    public readonly state: GHIssueState;
+    public readonly reporterLogin: string;
+    public readonly assignee: GHUser;
+    public readonly assignees: GHUser[];
+    public readonly updatedAt: Date;
+
+    public title: string;
+    public body: string;
+
+    public retrievedAt: Date;
+
+    constructor(json: any) {
+        this.url = json.url;
+        this.htmlUrl = json.html_url;
+        this.number = json.number;
+
+        if (json.state === "open") {
+            this.state = GHIssueState.Open;
+        } else if (json.state === "closed") {
+            this.state = GHIssueState.Closed;
+        }
+
+        this.title = json.title;
+        this.body = json.body;
+        this.reporterLogin = json.user.login;
+        this.updatedAt = new Date(json.updated_at);
+        this.assignee = new GHUser(json.assignee);
+
+        const assignees: GHUser[] = [];
+        for (const assigneeJSON of json.assignees) {
+            const assignee = new GHUser(assigneeJSON);
+            assignees.push(assignee);
+        }
+        this.assignees = assignees;
+
+        this.retrievedAt = new Date();
+    }
+}
+```
+
+### Same model by extending `Model`
+
+This is how you would represent the same model object by extending `Model`:
+
 ```typescript
 import { Model, KeyPaths, ValueTransformer } from "easy-models";
 
@@ -88,6 +143,22 @@ class GHIssue extends Model {
     }
 }
 ```
+
+### Advantages of using `Model` over the typical aproach
+
+- Turn a model *back* into JSON.
+
+You can define the key mapping between your model and the JSON using the `JSONKeyPaths` method.
+
+By default, turning a model back into JSON will map the values into the original keys. If your data needs transformation, you can define custom reversible transformers for each field, which will be used when turning the data to/from JSON (as seen for the `updatedAt` field above).
+
+- Update a model with new data from the server.
+
+`Model` has an extensible `mergeValues` method, which makes it easy to specify how new model data should be integrated.
+
+- Validate models.
+
+`Model` allows you to define validation methods for each field, which will be automatically called when you deserialize a model.
 
 ## Serializable
 

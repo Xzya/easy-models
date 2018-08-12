@@ -114,7 +114,7 @@ describe("JSONAdapter", () => {
         expect(model.nestedName).toEqual("bar");
     });
 
-    it("should fail to initialize if JSON dictionary validation fails", () => {
+    it("should fail to initialize if JSON validation fails", () => {
         const values = {
             "username": "this name is too long",
         };
