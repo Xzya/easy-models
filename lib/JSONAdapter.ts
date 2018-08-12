@@ -94,11 +94,17 @@ export function ModelFromObject<T extends Serializable>(json: any, Class: Newabl
 
         // if the key path is a string
         if (typeof keyPath === "string") {
-            value = get(json, keyPath);
+            // most keys are not nested, so we get a speedup by directly accessing the key instead
+            // of unnecessarily calling `get` every time
+            value = keyPath.indexOf(".") === -1 ? json[keyPath] : get(json, keyPath);
         } else {
             // else it must be an array of strings
             for (const path of keyPath) {
-                set(value, path, get(json, path));
+                if (path.indexOf(".") === -1) {
+                    value[path] = json[path];
+                } else {
+                    set(value, path, get(json, path));
+                }
             }
         }
 
@@ -184,17 +190,33 @@ export function ObjectFromModel<T extends Serializable>(model: T): any {
         // if the key path is a string
         if (typeof keyPath === "string") {
             if (transformer && transformer.allowsReverseTransformation()) {
-                set(result, keyPath, transformer.reverseTransformedValue(value));
+                if (keyPath.indexOf(".") === -1) {
+                    result[keyPath] = transformer.reverseTransformedValue(value);
+                } else {
+                    set(result, keyPath, transformer.reverseTransformedValue(value));
+                }
             } else {
-                set(result, keyPath, value);
+                if (keyPath.indexOf(".") === -1) {
+                    result[keyPath] = value;
+                } else {
+                    set(result, keyPath, value);
+                }
             }
         } else {
             // else it must be an array of strings
-            for (const path of keyPath) {
+            for (const path of (keyPath as string[])) {
                 if (transformer && transformer.allowsReverseTransformation()) {
-                    set(result, path, get(transformer.reverseTransformedValue(value), path));
+                    if (path.indexOf(".") === -1) {
+                        result[path] = transformer.reverseTransformedValue(value)[path];
+                    } else {
+                        set(result, path, get(transformer.reverseTransformedValue(value), path));
+                    }
                 } else {
-                    set(result, path, get(value, path));
+                    if (path.indexOf(".") === -1) {
+                        result[path] = value[path];
+                    } else {
+                        set(result, path, get(value, path));
+                    }
                 }
             }
         }

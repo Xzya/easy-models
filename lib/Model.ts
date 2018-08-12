@@ -1,4 +1,3 @@
-import set = require("lodash.set");
 import { Serializable, Newable } from "./Serializable";
 import { ModelFromObject, ObjectFromModel, ModelsFromArray, ArrayFromModels } from "./JSONAdapter";
 
@@ -74,7 +73,7 @@ export class Model extends Serializable {
             // and we have a model
             if (model) {
                 // take the value from the given model
-                set(this, key, model[key]);
+                this[key as any] = model[key];
             }
 
             return;
